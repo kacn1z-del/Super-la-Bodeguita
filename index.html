@@ -3,17 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>La Bodeguita | Servicios BN, Tiempos y Abarrotes</title>
+<title>La Bodeguita | BN Servicios, Tiempos JPS y Abarrotes</title>
 <style>
 :root{
   /* ---- COLORES DEL BN (aproximados: reemplazar con los oficiales del manual de marca) ---- */
-  --bn-primary:#00843d;   /* verde institucional */
+  --bn-primary:#00843d;
   --bn-dark:#0b3d24;
-  --bn-accent:#ffc72c;    /* dorado/amarillo de acento */
+  --bn-accent:#ffc72c;
 
   /* ---- COLORES DE CADA NEGOCIO ---- */
-  --bn-color:#00843d;     /* Servicios BN */
-  --lot-color:#f4a300;    /* Tiempos / Lotería */
+  --bn-color:#00843d;     /* BN Servicios */
+  --lot-color:#f4a300;    /* Tiempos JPS */
   --abr-color:#d7263d;    /* La Bodeguita (abarrotes) */
 
   /* ---- BASE ---- */
@@ -26,16 +26,18 @@ h1,h2,h3{font-weight:600;letter-spacing:.2px}
 
 /* ---------- SITIO PÚBLICO ---------- */
 header.top{background:var(--bn-dark);color:#fff;position:sticky;top:0;z-index:50;border-bottom:3px solid var(--bn-accent)}
-.wrap{max-width:1100px;margin:0 auto;padding:0 20px}
-.top .wrap{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;min-height:66px;padding-top:10px;padding-bottom:10px}
-.brand{display:flex;align-items:center;gap:12px;font-size:18px;letter-spacing:1px;text-transform:uppercase}
+.wrap{max-width:1100px;margin:0 auto;padding:0 16px}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px 12px;padding-top:10px;padding-bottom:10px}
+.brand{display:flex;align-items:center;gap:10px;font-size:17px;letter-spacing:1px;text-transform:uppercase;white-space:nowrap}
 .bn-badge{background:var(--bn-accent);color:var(--bn-dark);font-family:system-ui,sans-serif;font-weight:800;font-size:12px;padding:5px 9px;border-radius:4px;letter-spacing:.5px}
 .brand span{color:var(--bn-accent)}
-nav a{color:#e4f3ea;text-decoration:none;margin-left:18px;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:14px}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px}
+nav a{color:#e4f3ea;text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:14px;white-space:nowrap}
 nav a:hover{color:var(--bn-accent)}
 
-.hero{background:linear-gradient(120deg,var(--bn-dark) 0%,var(--bn-primary) 60%,#0f9d4f 100%);color:#fff;padding:90px 0 80px;text-align:center;position:relative;overflow:hidden}
+.hero{background:linear-gradient(120deg,var(--bn-dark) 0%,var(--bn-primary) 60%,#0f9d4f 100%);color:#fff;padding:80px 0 76px;text-align:center;position:relative;overflow:hidden}
 .hero::after{content:"";position:absolute;right:-80px;top:-80px;width:280px;height:280px;border-radius:50%;background:rgba(255,199,44,.15)}
+.hero .bn-grande{display:inline-block;position:relative;background:var(--bn-accent);color:var(--bn-dark);font-family:system-ui,sans-serif;font-weight:900;font-size:34px;letter-spacing:2px;padding:10px 24px;border-radius:10px;margin-bottom:22px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
 .hero h1{font-size:40px;margin-bottom:14px;position:relative}
 .hero p{color:#dff5e8;max-width:660px;margin:0 auto;font-size:18px;position:relative}
 .hero .line{width:90px;height:3px;background:var(--bn-accent);margin:22px auto;position:relative}
@@ -110,8 +112,8 @@ th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;le
       <div>La <span>Bodeguita</span></div>
     </div>
     <nav>
-      <a href="#servicios">Servicios BN</a>
-      <a href="#loteria">Tiempos</a>
+      <a href="#servicios">BN Servicios</a>
+      <a href="#loteria">Tiempos (JPS)</a>
       <a href="#abarrotes">Abarrotes</a>
       <a href="#contacto">Contacto</a>
     </nav>
@@ -120,9 +122,10 @@ th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;le
 
 <section id="inicio" class="hero">
   <div class="wrap">
+    <div class="bn-grande">BN</div>
     <h1>Servicios, Tiempos y Abarrotes</h1>
     <div class="line"></div>
-    <p>Trámites bancarios, juego oficial de Tiempos y productos básicos para su hogar, todo en un mismo lugar.</p>
+    <p>Trámites bancarios, Tiempos (juego oficial de la JPS) y productos básicos para su hogar, todo en un mismo lugar.</p>
     <span class="agente">Agente autorizado Banco Nacional de Costa Rica</span>
   </div>
 </section>
@@ -134,7 +137,7 @@ th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;le
     <div class="grid3">
       <article class="card" id="servicios" style="--c:var(--bn-color)">
         <div class="icono">🏦</div>
-        <h3>Servicios BN</h3>
+        <h3>BN Servicios</h3>
         <p>Gestión de trámites y pagos como agente autorizado del Banco Nacional.</p>
         <ul>
           <li>Pago de servicios</li>
@@ -144,7 +147,7 @@ th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;le
       </article>
       <article class="card" id="loteria" style="--c:var(--lot-color)">
         <div class="icono">🎯</div>
-        <h3>Tiempos</h3>
+        <h3>Tiempos JPS</h3>
         <p>Venta del juego oficial de la Junta de Protección Social (JPS).</p>
         <ul>
           <li>Juego oficial JPS</li>
@@ -190,8 +193,8 @@ th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;le
   </div>
   <div class="tabs" id="tabs">
     <button data-tab="resumen" class="on">Resumen</button>
-    <button data-tab="bn">Servicios BN</button>
-    <button data-tab="loteria">Tiempos</button>
+    <button data-tab="bn">BN Servicios</button>
+    <button data-tab="loteria">Tiempos JPS</button>
     <button data-tab="abarrotes">Abarrotes</button>
   </div>
   <div class="adm-body" id="pane"></div>
@@ -203,8 +206,8 @@ const ADMIN_PIN = '1234';            // Cambiar por un PIN propio
 const KEY = 'bodeguita-admin-v1';
 
 const BIZ = {
-  bn:        { nombre: 'Servicios BN', color: '#00843d', tipos: ['Pago de servicio','Recarga','Trámite','Otro'] },
-  loteria:   { nombre: 'Tiempos',      color: '#f4a300', tipos: ['Tiempos','Otro'] },
+  bn:        { nombre: 'BN Servicios', color: '#00843d', tipos: ['Pago de servicio','Recarga','Trámite','Otro'] },
+  loteria:   { nombre: 'Tiempos JPS',  color: '#f4a300', tipos: ['Tiempos','Otro'] },
   abarrotes: { nombre: 'Abarrotes',    color: '#d7263d', tipos: ['Venta mostrador','Venta a domicilio','Otro'] }
 };
 
