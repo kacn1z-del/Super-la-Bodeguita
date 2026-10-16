@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La Bodeguita | Servicios BN, Tiempos y Abarrotes</title>
+<style>
+:root{
+  /* ---- COLORES DEL BN (aproximados: reemplazar con los oficiales del manual de marca) ---- */
+  --bn-primary:#00843d;   /* verde institucional */
+  --bn-dark:#0b3d24;
+  --bn-accent:#ffc72c;    /* dorado/amarillo de acento */
+
+  /* ---- COLORES DE CADA NEGOCIO ---- */
+  --bn-color:#00843d;     /* Servicios BN */
+  --lot-color:#f4a300;    /* Tiempos / Lotería */
+  --abr-color:#d7263d;    /* La Bodeguita (abarrotes) */
+
+  /* ---- BASE ---- */
+  --ink:#1d2433;--muted:#64708a;--bg:#f7f8f4;--card:#ffffff;--line:#e4e7df;
+  --danger:#b23a3a;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,'Times New Roman',serif;background:var(--bg);color:var(--ink);line-height:1.5}
+h1,h2,h3{font-weight:600;letter-spacing:.2px}
+
+/* ---------- SITIO PÚBLICO ---------- */
+header.top{background:var(--bn-dark);color:#fff;position:sticky;top:0;z-index:50;border-bottom:3px solid var(--bn-accent)}
+.wrap{max-width:1100px;margin:0 auto;padding:0 20px}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;min-height:66px;padding-top:10px;padding-bottom:10px}
+.brand{display:flex;align-items:center;gap:12px;font-size:18px;letter-spacing:1px;text-transform:uppercase}
+.bn-badge{background:var(--bn-accent);color:var(--bn-dark);font-family:system-ui,sans-serif;font-weight:800;font-size:12px;padding:5px 9px;border-radius:4px;letter-spacing:.5px}
+.brand span{color:var(--bn-accent)}
+nav a{color:#e4f3ea;text-decoration:none;margin-left:18px;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:14px}
+nav a:hover{color:var(--bn-accent)}
+
+.hero{background:linear-gradient(120deg,var(--bn-dark) 0%,var(--bn-primary) 60%,#0f9d4f 100%);color:#fff;padding:90px 0 80px;text-align:center;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-80px;top:-80px;width:280px;height:280px;border-radius:50%;background:rgba(255,199,44,.15)}
+.hero h1{font-size:40px;margin-bottom:14px;position:relative}
+.hero p{color:#dff5e8;max-width:660px;margin:0 auto;font-size:18px;position:relative}
+.hero .line{width:90px;height:3px;background:var(--bn-accent);margin:22px auto;position:relative}
+.hero .agente{display:inline-block;margin-top:18px;background:var(--bn-accent);color:var(--bn-dark);font-family:system-ui,sans-serif;font-weight:700;font-size:13px;padding:8px 16px;border-radius:20px;position:relative}
+
+section.pad{padding:70px 0}
+.sec-title{text-align:center;font-size:30px;color:var(--bn-dark);margin-bottom:10px}
+.sec-sub{text-align:center;color:var(--muted);margin-bottom:44px;font-family:system-ui,sans-serif}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:30px 26px;box-shadow:0 4px 16px rgba(11,61,36,.07);border-top:5px solid var(--c)}
+.card .icono{width:48px;height:48px;border-radius:12px;background:var(--c);color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:14px}
+.card h3{color:var(--bn-dark);font-size:21px;margin-bottom:10px}
+.card p{color:var(--muted);font-family:system-ui,sans-serif;font-size:15px;margin-bottom:14px}
+.card ul{list-style:none;font-family:system-ui,sans-serif;font-size:14px}
+.card li{padding:6px 0;border-bottom:1px dashed var(--line)}
+.card li::before{content:"● ";color:var(--c);font-size:10px}
+.nota{font-family:system-ui,sans-serif;font-size:13px;color:var(--muted);margin-top:14px;font-style:italic}
+
+.contacto{background:#fff;text-align:center;font-family:system-ui,sans-serif}
+footer{background:var(--bn-dark);color:#cfe9d9;padding:40px 0;text-align:center;font-family:system-ui,sans-serif;font-size:14px}
+footer b{color:var(--bn-accent)}
+footer a{color:#9fd3b3}
+
+/* ---------- ADMIN ---------- */
+#admin{display:none;min-height:100vh;background:var(--bg)}
+body.is-admin header.top,body.is-admin #inicio,body.is-admin #negocios,body.is-admin #contacto,body.is-admin footer{display:none}
+body.is-admin #admin{display:block}
+.adm-head{background:var(--bn-dark);color:#fff;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;font-family:system-ui,sans-serif;border-bottom:3px solid var(--bn-accent)}
+.adm-head button{background:transparent;color:var(--bn-accent);border:1px solid var(--bn-accent);padding:7px 12px;border-radius:4px;cursor:pointer;font-size:13px}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding:14px 20px;background:#fff;border-bottom:1px solid var(--line);font-family:system-ui,sans-serif}
+.tabs button{border:2px solid var(--line);background:#fff;padding:9px 14px;border-radius:20px;cursor:pointer;white-space:nowrap;font-size:14px;color:var(--ink)}
+.tabs button[data-tab="bn"]{border-color:var(--bn-color)}
+.tabs button[data-tab="loteria"]{border-color:var(--lot-color)}
+.tabs button[data-tab="abarrotes"]{border-color:var(--abr-color)}
+.tabs button.on{color:#fff}
+.tabs button[data-tab="resumen"].on{background:var(--bn-dark);border-color:var(--bn-dark)}
+.tabs button[data-tab="bn"].on{background:var(--bn-color)}
+.tabs button[data-tab="loteria"].on{background:var(--lot-color);color:var(--bn-dark)}
+.tabs button[data-tab="abarrotes"].on{background:var(--abr-color)}
+.adm-body{padding:22px 20px;font-family:system-ui,sans-serif;max-width:1000px;margin:0 auto}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px}
+.kpi{background:#fff;border:1px solid var(--line);border-left:5px solid var(--kc,var(--bn-dark));padding:18px;border-radius:8px}
+.kpi small{color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-size:11px}
+.kpi strong{display:block;font-size:22px;color:var(--bn-dark);margin-top:6px;font-family:Georgia,serif}
+.panel{background:#fff;border:1px solid var(--line);border-radius:8px;padding:20px;margin-bottom:22px}
+.panel h3{color:var(--bn-dark);margin-bottom:14px;font-size:18px}
+.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;align-items:end}
+label{font-size:12px;color:var(--muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
+input,select{width:100%;padding:10px;border:1px solid var(--line);border-radius:6px;font-size:15px;background:#fff;font-family:inherit}
+.btn{background:var(--bn-primary);color:#fff;border:none;padding:11px 16px;border-radius:6px;cursor:pointer;font-size:14px;font-weight:600}
+.btn:hover{filter:brightness(1.1)}
+.btn.gold{background:var(--bn-accent);color:var(--bn-dark)}
+.btn.small{padding:6px 10px;font-size:12px}
+.btn.del{background:var(--danger)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line)}
+th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+.num{text-align:right!important}
+.tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;background:#eef3ec;color:var(--bn-dark)}
+.low{color:var(--danger);font-weight:700}
+.empty{color:var(--muted);padding:14px 0;text-align:center}
+.scroll{overflow-x:auto}
+</style>
+</head>
+<body>
+
+<!-- ============ SITIO PÚBLICO ============ -->
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <span class="bn-badge">BN</span>
+      <div>La <span>Bodeguita</span></div>
+    </div>
+    <nav>
+      <a href="#servicios">Servicios BN</a>
+      <a href="#loteria">Tiempos</a>
+      <a href="#abarrotes">Abarrotes</a>
+      <a href="#contacto">Contacto</a>
+    </nav>
+  </div>
+</header>
+
+<section id="inicio" class="hero">
+  <div class="wrap">
+    <h1>Servicios, Tiempos y Abarrotes</h1>
+    <div class="line"></div>
+    <p>Trámites bancarios, juego oficial de Tiempos y productos básicos para su hogar, todo en un mismo lugar.</p>
+    <span class="agente">Agente autorizado Banco Nacional de Costa Rica</span>
+  </div>
+</section>
+
+<section id="negocios" class="pad">
+  <div class="wrap">
+    <h2 class="sec-title">Nuestros servicios</h2>
+    <p class="sec-sub">Tres líneas de negocio, una misma atención</p>
+    <div class="grid3">
+      <article class="card" id="servicios" style="--c:var(--bn-color)">
+        <div class="icono">🏦</div>
+        <h3>Servicios BN</h3>
+        <p>Gestión de trámites y pagos como agente autorizado del Banco Nacional.</p>
+        <ul>
+          <li>Pago de servicios</li>
+          <li>Recargas y trámites</li>
+          <li>Atención personalizada</li>
+        </ul>
+      </article>
+      <article class="card" id="loteria" style="--c:var(--lot-color)">
+        <div class="icono">🎯</div>
+        <h3>Tiempos</h3>
+        <p>Venta del juego oficial de la Junta de Protección Social (JPS).</p>
+        <ul>
+          <li>Juego oficial JPS</li>
+          <li>Atención rápida</li>
+        </ul>
+        <p class="nota">Juego autorizado por la JPS. Juegue con responsabilidad.</p>
+      </article>
+      <article class="card" id="abarrotes" style="--c:var(--abr-color)">
+        <div class="icono">🛒</div>
+        <h3>La Bodeguita</h3>
+        <p>Productos de primera necesidad para su hogar.</p>
+        <ul>
+          <li>Despensa básica</li>
+          <li>Bebidas y limpieza</li>
+          <li>Precios competitivos</li>
+        </ul>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="contacto" class="pad contacto">
+  <div class="wrap">
+    <h2 class="sec-title">Contáctenos</h2>
+    <p class="sec-sub">Reemplazar con los datos reales</p>
+    <p>📍 [Dirección] &nbsp;·&nbsp; 📞 [Teléfono] &nbsp;·&nbsp; ✉️ [Correo]</p>
+    <p>🕘 [Horario de atención]</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p><b>La Bodeguita</b> · Agente autorizado BN · © 2026</p>
+    <p style="margin-top:8px"><a href="#admin">Acceso administración</a></p>
+  </div>
+</footer>
+
+<!-- ============ PANEL ADMINISTRACIÓN ============ -->
+<section id="admin">
+  <div class="adm-head">
+    <strong>La Bodeguita · Administración</strong>
+    <button id="salir">Salir</button>
+  </div>
+  <div class="tabs" id="tabs">
+    <button data-tab="resumen" class="on">Resumen</button>
+    <button data-tab="bn">Servicios BN</button>
+    <button data-tab="loteria">Tiempos</button>
+    <button data-tab="abarrotes">Abarrotes</button>
+  </div>
+  <div class="adm-body" id="pane"></div>
+</section>
+
+<script>
+/* ---------- CONFIGURACIÓN ---------- */
+const ADMIN_PIN = '1234';            // Cambiar por un PIN propio
+const KEY = 'bodeguita-admin-v1';
+
+const BIZ = {
+  bn:        { nombre: 'Servicios BN', color: '#00843d', tipos: ['Pago de servicio','Recarga','Trámite','Otro'] },
+  loteria:   { nombre: 'Tiempos',      color: '#f4a300', tipos: ['Tiempos','Otro'] },
+  abarrotes: { nombre: 'Abarrotes',    color: '#d7263d', tipos: ['Venta mostrador','Venta a domicilio','Otro'] }
+};
+
+/* ---------- DATOS ---------- */
+let db;
+try { db = JSON.parse(localStorage.getItem(KEY)); } catch(e) {}
+if (!db) db = { ventas: [], productos: [] };
+
+function persist(){
+  try { localStorage.setItem(KEY, JSON.stringify(db)); }
+  catch(e){ alert('No se pudo guardar en este navegador'); }
+}
+
+/* ---------- UTILIDADES ---------- */
+const fmt = n => new Intl.NumberFormat('es-CR',{style:'currency',currency:'CRC',maximumFractionDigits:0}).format(Number(n)||0);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const hoy = () => new Date().toLocaleString('es-CR',{dateStyle:'short',timeStyle:'short'});
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+const val = id => (document.getElementById(id)?.value ?? '');
+
+function venta(biz, tipo, desc, monto){
+  db.ventas.unshift({ id: uid(), biz, tipo, desc, monto: Number(monto), fecha: hoy() });
+  persist();
+}
+
+/* ---------- VISTAS ---------- */
+let tabActual = 'resumen';
+
+function tablaVentas(filas, conNegocio = false){
+  if (!filas.length) return '<p class="empty">Sin registros todavía</p>';
+  return `<div class="scroll"><table>
+    <thead><tr>
+      <th>Fecha</th>${conNegocio ? '<th>Negocio</th>' : ''}<th>Tipo</th><th>Detalle</th><th class="num">Monto</th><th></th>
+    </tr></thead>
+    <tbody>${filas.map(v => `
+      <tr>
+        <td>${esc(v.fecha)}</td>
+        ${conNegocio ? `<td>${esc(BIZ[v.biz]?.nombre || v.biz)}</td>` : ''}
+        <td><span class="tag">${esc(v.tipo)}</span></td>
+        <td>${esc(v.desc)}</td>
+        <td class="num">${fmt(v.monto)}</td>
+        <td><button class="btn small del" data-act="del" data-id="${v.id}">✕</button></td>
+      </tr>`).join('')}
+    </tbody></table></div>`;
+}
+
+function vistaResumen(){
+  const kpi = (titulo, monto, cant, color) => `
+    <div class="kpi" style="--kc:${color}"><small>${esc(titulo)}</small><strong>${fmt(monto)}</strong>
+    <span style="color:var(--muted);font-size:13px">${cant} operaciones</span></div>`;
+  const total = db.ventas.reduce((s,v) => s + Number(v.monto||0), 0);
+  const porNegocio = Object.keys(BIZ).map(b => {
+    const f = db.ventas.filter(v => v.biz === b);
+    return kpi(BIZ[b].nombre, f.reduce((s,v) => s + Number(v.monto||0), 0), f.length, BIZ[b].color);
+  }).join('');
+  return `
+    <div class="kpis">${kpi('Total general', total, db.ventas.length, '#0b3d24')}${porNegocio}</div>
+    <div class="panel"><h3>Últimos movimientos</h3>${tablaVentas(db.ventas.slice(0,15), true)}</div>`;
+}
+
+function vistaLedger(biz){
+  const filas = db.ventas.filter(v => v.biz === biz);
+  return `
+    <div class="panel">
+      <h3>Registrar — ${esc(BIZ[biz].nombre)}</h3>
+      <div class="form">
+        <div><label>Tipo</label>
+          <select id="f-tipo">${BIZ[biz].tipos.map(t => `<option>${esc(t)}</option>`).join('')}</select></div>
+        <div><label>Descripción</label><input id="f-desc" placeholder="Detalle"></div>
+        <div><label>Monto (₡)</label><input id="f-monto" type="number" min="0" step="any"></div>
+        <div><button class="btn gold" data-act="add" data-biz="${biz}">Registrar</button></div>
+      </div>
+    </div>
+    <div class="panel"><h3>Historial</h3>${tablaVentas(filas)}</div>`;
+}
+
+function vistaAbarrotes(){
+  const filas = db.productos.map(p => `
+    <tr>
+      <td>${esc(p.nombre)}</td>
+      <td class="num">${fmt(p.precio)}</td>
+      <td class="num ${p.stock <= 5 ? 'low' : ''}">${p.stock}</td>
+      <td style="white-space:nowrap">
+        <button class="btn small gold" data-act="vender" data-id="${p.id}">Vender 1</button>
+        <button class="btn small del" data-act="delprod" data-id="${p.id}">✕</button>
+      </td>
+    </tr>`).join('');
+  return `
+    <div class="panel">
+      <h3>Nuevo producto</h3>
+      <div class="form">
+        <div><label>Nombre</label><input id="p-nombre"></div>
+        <div><label>Precio (₡)</label><input id="p-precio" type="number" min="0" step="any"></div>
+        <div><label>Existencias</label><input id="p-stock" type="number" min="0" step="1"></div>
+        <div><button class="btn gold" data-act="addprod">Agregar</button></div>
+      </div>
+    </div>
+    <div class="panel"><h3>Inventario</h3>
+      ${db.productos.length
+        ? `<div class="scroll"><table>
+             <thead><tr><th>Producto</th><th class="num">Precio</th><th class="num">Stock</th><th></th></tr></thead>
+             <tbody>${filas}</tbody></table></div>`
+        : '<p class="empty">No hay productos registrados</p>'}
+    </div>
+    <div class="panel"><h3>Ventas de abarrotes</h3>
+      ${tablaVentas(db.ventas.filter(v => v.biz === 'abarrotes'))}
+    </div>`;
+}
+
+function render(){
+  const pane = document.getElementById('pane');
+  if (tabActual === 'resumen')        pane.innerHTML = vistaResumen();
+  else if (tabActual === 'abarrotes') pane.innerHTML = vistaAbarrotes();
+  else                                pane.innerHTML = vistaLedger(tabActual === 'bn' ? 'bn' : tabActual);
+}
+
+function showTab(t){
+  tabActual = t;
+  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === t));
+  render();
+}
+
+/* ---------- EVENTOS ---------- */
+document.getElementById('tabs').addEventListener('click', e => {
+  const b = e.target.closest('button[data-tab]');
+  if (b) showTab(b.dataset.tab);
+});
+
+document.getElementById('pane').addEventListener('click', e => {
+  const b = e.target.closest('[data-act]');
+  if (!b) return;
+  const act = b.dataset.act;
+
+  if (act === 'add'){
+    const biz = b.dataset.biz;
+    const desc = val('f-desc').trim();
+    const monto = parseFloat(val('f-monto'));
+    if (!desc || !(monto > 0)) { alert('Complete la descripción y un monto válido'); return; }
+    venta(biz, val('f-tipo'), desc, monto);
+    render();
+  }
+
+  if (act === 'del'){
+    if (confirm('¿Eliminar este registro?')){
+      db.ventas = db.ventas.filter(v => v.id !== b.dataset.id);
+      persist(); render();
+    }
+  }
+
+  if (act === 'addprod'){
+    const nombre = val('p-nombre').trim();
+    const precio = parseFloat(val('p-precio'));
+    const stock = parseInt(val('p-stock'), 10);
+    if (!nombre || !(precio >= 0) || isNaN(stock) || stock < 0){
+      alert('Complete nombre, precio y existencias'); return;
+    }
+    db.productos.push({ id: uid(), nombre, precio, stock });
+    persist(); render();
+  }
+
+  if (act === 'vender'){
+    const p = db.productos.find(x => x.id === b.dataset.id);
+    if (!p || p.stock < 1){ alert('Sin existencias'); return; }
+    p.stock--;
+    venta('abarrotes', 'Venta mostrador', p.nombre, p.precio);
+    persist(); render();
+  }
+
+  if (act === 'delprod'){
+    if (confirm('¿Eliminar este producto?')){
+      db.productos = db.productos.filter(x => x.id !== b.dataset.id);
+      persist(); render();
+    }
+  }
+});
+
+/* ---------- ACCESO ADMIN ---------- */
+function abrirAdmin(){
+  document.body.classList.add('is-admin');
+  window.scrollTo(0,0);
+  showTab(tabActual);
+}
+
+function entrarAdmin(){
+  if (sessionStorage.getItem('adm') === 'ok'){ abrirAdmin(); return; }
+  const pin = prompt('PIN de administración');
+  if (pin === ADMIN_PIN){
+    sessionStorage.setItem('adm','ok');
+    abrirAdmin();
+  } else {
+    if (pin !== null) alert('PIN incorrecto');
+    location.hash = '';
+  }
+}
+
+function route(){
+  if (location.hash === '#admin') entrarAdmin();
+  else document.body.classList.remove('is-admin');
+}
+
+document.getElementById('salir').addEventListener('click', () => {
+  sessionStorage.removeItem('adm');
+  location.hash = '';
+});
+
+window.addEventListener('hashchange', route);
+route();
+</script>
+</body>
+</html>
