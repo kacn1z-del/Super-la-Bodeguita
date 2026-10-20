@@ -6,414 +6,531 @@
 <title>La Bodeguita | BN Servicios, Tiempos JPS y Abarrotes</title>
 <style>
 :root{
-  /* ---- COLORES DEL BN (aproximados: reemplazar con los oficiales del manual de marca) ---- */
+  /* COLORES DEL BN (aproximados: reemplazar con los oficiales del manual de marca) */
   --bn-primary:#00843d;
   --bn-dark:#0b3d24;
   --bn-accent:#ffc72c;
 
-  /* ---- COLORES DE CADA NEGOCIO ---- */
-  --bn-color:#00843d;     /* BN Servicios */
-  --lot-color:#f4a300;    /* Tiempos JPS */
-  --abr-color:#d7263d;    /* La Bodeguita (abarrotes) */
+  /* COLORES POR NEGOCIO */
+  --bn-color:#00843d;
+  --lot-color:#f4a300;
+  --abr-color:#d7263d;
 
-  /* ---- BASE ---- */
-  --ink:#1d2433;--muted:#64708a;--bg:#f7f8f4;--card:#ffffff;--line:#e4e7df;
-  --danger:#b23a3a;
+  /* BASE */
+  --ink:#1d2433;--muted:#64708a;--bg:#f7f8f4;--card:#ffffff;--line:#e4e7df;--danger:#b23a3a;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Georgia,'Times New Roman',serif;background:var(--bg);color:var(--ink);line-height:1.5}
+body{font-family:Georgia,'Times New Roman',serif;background:var(--bg);color:var(--ink);line-height:1.5;min-height:100vh;display:flex;flex-direction:column}
 h1,h2,h3{font-weight:600;letter-spacing:.2px}
+a{color:var(--bn-primary)}
+.sans{font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:0 16px;width:100%}
 
-/* ---------- SITIO PÚBLICO ---------- */
+/* ---------- ENCABEZADO ---------- */
 header.top{background:var(--bn-dark);color:#fff;position:sticky;top:0;z-index:50;border-bottom:3px solid var(--bn-accent)}
-.wrap{max-width:1100px;margin:0 auto;padding:0 16px}
-.top .wrap{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px 12px;padding-top:10px;padding-bottom:10px}
-.brand{display:flex;align-items:center;gap:10px;font-size:17px;letter-spacing:1px;text-transform:uppercase;white-space:nowrap}
+header.top .wrap{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px 12px;padding-top:10px;padding-bottom:10px}
+.brand{display:flex;align-items:center;gap:10px;font-size:17px;letter-spacing:1px;text-transform:uppercase;white-space:nowrap;color:#fff;text-decoration:none}
 .bn-badge{background:var(--bn-accent);color:var(--bn-dark);font-family:system-ui,sans-serif;font-weight:800;font-size:12px;padding:5px 9px;border-radius:4px;letter-spacing:.5px}
 .brand span{color:var(--bn-accent)}
-nav{display:flex;flex-wrap:wrap;gap:6px 14px}
-nav a{color:#e4f3ea;text-decoration:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:14px;white-space:nowrap}
-nav a:hover{color:var(--bn-accent)}
+nav{display:flex;flex-wrap:wrap;gap:6px}
+nav a{color:#e4f3ea;text-decoration:none;font-family:system-ui,sans-serif;font-size:14px;padding:7px 12px;border-radius:20px;white-space:nowrap}
+nav a:hover{background:rgba(255,255,255,.08)}
+nav a.on{background:var(--bn-accent);color:var(--bn-dark);font-weight:700}
 
-.hero{background:linear-gradient(120deg,var(--bn-dark) 0%,var(--bn-primary) 60%,#0f9d4f 100%);color:#fff;padding:80px 0 76px;text-align:center;position:relative;overflow:hidden}
+/* ---------- PORTADA ---------- */
+.hero{background:linear-gradient(120deg,var(--bn-dark) 0%,var(--bn-primary) 60%,#0f9d4f 100%);color:#fff;padding:70px 0 66px;text-align:center;position:relative;overflow:hidden}
 .hero::after{content:"";position:absolute;right:-80px;top:-80px;width:280px;height:280px;border-radius:50%;background:rgba(255,199,44,.15)}
-.hero .bn-grande{display:inline-block;position:relative;background:var(--bn-accent);color:var(--bn-dark);font-family:system-ui,sans-serif;font-weight:900;font-size:34px;letter-spacing:2px;padding:10px 24px;border-radius:10px;margin-bottom:22px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
-.hero h1{font-size:40px;margin-bottom:14px;position:relative}
-.hero p{color:#dff5e8;max-width:660px;margin:0 auto;font-size:18px;position:relative}
-.hero .line{width:90px;height:3px;background:var(--bn-accent);margin:22px auto;position:relative}
-.hero .agente{display:inline-block;margin-top:18px;background:var(--bn-accent);color:var(--bn-dark);font-family:system-ui,sans-serif;font-weight:700;font-size:13px;padding:8px 16px;border-radius:20px;position:relative}
+.hero > .wrap{position:relative}
+.pill{display:inline-block;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);font-family:system-ui,sans-serif;font-size:13px;padding:6px 14px;border-radius:20px;margin-bottom:18px}
+.bn-grande{display:inline-block;background:var(--bn-accent);color:var(--bn-dark);font-family:system-ui,sans-serif;font-weight:900;font-size:32px;letter-spacing:2px;padding:8px 22px;border-radius:10px;margin-bottom:20px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+.hero h1{font-size:40px;margin-bottom:14px}
+.hero h1 span{color:var(--bn-accent)}
+.hero p{color:#dff5e8;max-width:640px;margin:0 auto;font-size:18px}
+.cta{margin-top:26px;display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.btn-pill{display:inline-block;padding:12px 22px;border-radius:24px;border:2px solid #fff;color:#fff;text-decoration:none;font-family:system-ui,sans-serif;font-weight:600;font-size:15px;background:transparent;cursor:pointer}
+.btn-pill.gold{background:var(--bn-accent);border-color:var(--bn-accent);color:var(--bn-dark)}
 
-section.pad{padding:70px 0}
-.sec-title{text-align:center;font-size:30px;color:var(--bn-dark);margin-bottom:10px}
-.sec-sub{text-align:center;color:var(--muted);margin-bottom:44px;font-family:system-ui,sans-serif}
-.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:30px 26px;box-shadow:0 4px 16px rgba(11,61,36,.07);border-top:5px solid var(--c)}
-.card .icono{width:48px;height:48px;border-radius:12px;background:var(--c);color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:14px}
-.card h3{color:var(--bn-dark);font-size:21px;margin-bottom:10px}
-.card p{color:var(--muted);font-family:system-ui,sans-serif;font-size:15px;margin-bottom:14px}
-.card ul{list-style:none;font-family:system-ui,sans-serif;font-size:14px}
-.card li{padding:6px 0;border-bottom:1px dashed var(--line)}
-.card li::before{content:"● ";color:var(--c);font-size:10px}
-.nota{font-family:system-ui,sans-serif;font-size:13px;color:var(--muted);margin-top:14px;font-style:italic}
+/* ---------- SECCIONES ---------- */
+main{flex:1}
+.pad{padding:64px 0}
+.pad-s{padding:40px 0}
+.sec-title{text-align:center;font-size:30px;color:var(--bn-dark);margin-bottom:8px}
+.sec-sub{text-align:center;color:var(--muted);margin-bottom:34px;font-family:system-ui,sans-serif}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:22px}
 
-.contacto{background:#fff;text-align:center;font-family:system-ui,sans-serif}
-footer{background:var(--bn-dark);color:#cfe9d9;padding:40px 0;text-align:center;font-family:system-ui,sans-serif;font-size:14px}
-footer b{color:var(--bn-accent)}
-footer a{color:#9fd3b3}
+/* ---------- TARJETAS ---------- */
+.quick{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:18px}
+.qcard{background:var(--card);border:1px solid var(--line);border-top:5px solid var(--c);border-radius:10px;padding:24px 20px;text-decoration:none;color:var(--ink);box-shadow:0 4px 16px rgba(11,61,36,.07);transition:transform .15s}
+.qcard:hover{transform:translateY(-3px)}
+.qcard .icono{width:46px;height:46px;border-radius:12px;background:var(--c);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:12px}
+.qcard h3{color:var(--bn-dark);font-size:18px}
+.card{background:var(--card);border:1px solid var(--line);border-top:4px solid var(--c,var(--bn-dark));border-radius:10px;padding:22px 20px;box-shadow:0 4px 14px rgba(11,61,36,.06)}
+.card h3{color:var(--bn-dark);font-size:19px;margin:8px 0}
+.card p{color:var(--muted);font-family:system-ui,sans-serif;font-size:15px;margin-top:8px}
+.card small{color:var(--muted);font-family:system-ui,sans-serif;font-size:13px}
+.tag{display:inline-block;padding:2px 10px;border-radius:10px;font-size:11px;font-family:system-ui,sans-serif;background:var(--c,var(--bn-dark));color:#fff;letter-spacing:.3px}
+.empty{color:var(--muted);padding:16px 0;text-align:center;font-family:system-ui,sans-serif}
 
-/* ---------- ADMIN ---------- */
-#admin{display:none;min-height:100vh;background:var(--bg)}
-body.is-admin header.top,body.is-admin #inicio,body.is-admin #negocios,body.is-admin #contacto,body.is-admin footer{display:none}
-body.is-admin #admin{display:block}
-.adm-head{background:var(--bn-dark);color:#fff;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;font-family:system-ui,sans-serif;border-bottom:3px solid var(--bn-accent)}
-.adm-head button{background:transparent;color:var(--bn-accent);border:1px solid var(--bn-accent);padding:7px 12px;border-radius:4px;cursor:pointer;font-size:13px}
-.tabs{display:flex;gap:8px;overflow-x:auto;padding:14px 20px;background:#fff;border-bottom:1px solid var(--line);font-family:system-ui,sans-serif}
-.tabs button{border:2px solid var(--line);background:#fff;padding:9px 14px;border-radius:20px;cursor:pointer;white-space:nowrap;font-size:14px;color:var(--ink)}
-.tabs button[data-tab="bn"]{border-color:var(--bn-color)}
-.tabs button[data-tab="loteria"]{border-color:var(--lot-color)}
-.tabs button[data-tab="abarrotes"]{border-color:var(--abr-color)}
-.tabs button.on{color:#fff}
-.tabs button[data-tab="resumen"].on{background:var(--bn-dark);border-color:var(--bn-dark)}
-.tabs button[data-tab="bn"].on{background:var(--bn-color)}
-.tabs button[data-tab="loteria"].on{background:var(--lot-color);color:var(--bn-dark)}
-.tabs button[data-tab="abarrotes"].on{background:var(--abr-color)}
-.adm-body{padding:22px 20px;font-family:system-ui,sans-serif;max-width:1000px;margin:0 auto}
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px}
-.kpi{background:#fff;border:1px solid var(--line);border-left:5px solid var(--kc,var(--bn-dark));padding:18px;border-radius:8px}
-.kpi small{color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-size:11px}
-.kpi strong{display:block;font-size:22px;color:var(--bn-dark);margin-top:6px;font-family:Georgia,serif}
-.panel{background:#fff;border:1px solid var(--line);border-radius:8px;padding:20px;margin-bottom:22px}
-.panel h3{color:var(--bn-dark);margin-bottom:14px;font-size:18px}
-.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;align-items:end}
-label{font-size:12px;color:var(--muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
-input,select{width:100%;padding:10px;border:1px solid var(--line);border-radius:6px;font-size:15px;background:#fff;font-family:inherit}
-.btn{background:var(--bn-primary);color:#fff;border:none;padding:11px 16px;border-radius:6px;cursor:pointer;font-size:14px;font-weight:600}
+/* ---------- NOTICIAS / FILTROS ---------- */
+.filtros{display:flex;flex-direction:column;gap:14px;margin-bottom:28px;font-family:system-ui,sans-serif}
+.filtros input{max-width:520px;margin:0 auto;width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.chip{border:1px solid var(--line);background:#fff;padding:7px 14px;border-radius:20px;cursor:pointer;font-size:14px;color:var(--ink)}
+.chip.on{background:var(--bn-dark);color:#fff;border-color:var(--bn-dark)}
+
+/* ---------- EVENTOS ---------- */
+.evento{display:flex;gap:16px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px;margin-bottom:16px;font-family:system-ui,sans-serif}
+.fecha-box{min-width:70px;text-align:center;background:var(--lot-color);color:var(--bn-dark);border-radius:8px;padding:8px 6px;height:fit-content}
+.fecha-box b{display:block;font-size:26px;line-height:1}
+.fecha-box span{font-size:12px;font-weight:700;letter-spacing:.5px}
+.evento h3{color:var(--bn-dark);font-size:18px;margin-bottom:4px}
+.evento small{color:var(--muted)}
+.evento p{color:var(--ink);margin-top:6px;font-size:15px}
+
+/* ---------- FORMULARIOS ---------- */
+.form-pub{background:#fff;border:1px solid var(--line);border-top:5px solid var(--bn-accent);border-radius:10px;padding:26px;max-width:640px;margin:0 auto;font-family:system-ui,sans-serif;display:grid;gap:14px}
+.flash{max-width:640px;margin:0 auto 20px;background:#e8f6ee;border:1px solid var(--bn-primary);color:var(--bn-dark);padding:14px 18px;border-radius:8px;font-family:system-ui,sans-serif}
+label{font-size:12px;color:var(--muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px;font-family:system-ui,sans-serif}
+input,select,textarea{width:100%;padding:11px;border:1px solid var(--line);border-radius:6px;font-size:15px;background:#fff;font-family:inherit}
+textarea{resize:vertical}
+.btn{background:var(--bn-primary);color:#fff;border:none;padding:11px 16px;border-radius:6px;cursor:pointer;font-size:14px;font-weight:600;font-family:system-ui,sans-serif}
 .btn:hover{filter:brightness(1.1)}
 .btn.gold{background:var(--bn-accent);color:var(--bn-dark)}
-.btn.small{padding:6px 10px;font-size:12px}
 .btn.del{background:var(--danger)}
-table{width:100%;border-collapse:collapse;font-size:14px}
-th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line)}
-th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
-.num{text-align:right!important}
-.tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;background:#eef3ec;color:var(--bn-dark)}
-.low{color:var(--danger);font-weight:700}
-.empty{color:var(--muted);padding:14px 0;text-align:center}
+.btn.small{padding:6px 10px;font-size:12px}
+.btn.wa{background:#25d366}
+
+/* ---------- CONTACTO ---------- */
+.contacto-box{text-align:center;font-family:system-ui,sans-serif;background:#fff;border:1px solid var(--line);border-radius:10px;padding:30px;max-width:640px;margin:0 auto}
+.contacto-box p{margin:10px 0;font-size:16px}
+
+/* ---------- ADMIN ---------- */
+.adm-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:18px;font-family:system-ui,sans-serif}
+.adm-head h2{color:var(--bn-dark);font-size:24px}
+.adm-tabs{display:flex;gap:8px;overflow-x:auto;margin-bottom:22px;font-family:system-ui,sans-serif}
+.adm-tabs button{border:2px solid var(--line);background:#fff;padding:9px 14px;border-radius:20px;cursor:pointer;white-space:nowrap;font-size:14px}
+.adm-tabs button.on{background:var(--bn-dark);border-color:var(--bn-dark);color:#fff}
+.panel{background:#fff;border:1px solid var(--line);border-radius:8px;padding:20px;margin-bottom:22px;font-family:system-ui,sans-serif}
+.panel h3{color:var(--bn-dark);margin-bottom:14px;font-size:18px}
+.grid-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;align-items:end}
 .scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px;font-family:system-ui,sans-serif}
+th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+
+/* ---------- PIE ---------- */
+footer{background:var(--bn-dark);color:#cfe9d9;padding:34px 0;text-align:center;font-family:system-ui,sans-serif;font-size:14px}
+footer b{color:var(--bn-accent)}
+footer a{color:#9fd3b3}
+.aviso-jps{margin-top:10px;font-size:13px;color:#a9c9b6;font-style:italic}
+.hidden{display:none!important}
 </style>
 </head>
 <body>
 
-<!-- ============ SITIO PÚBLICO ============ -->
 <header class="top">
   <div class="wrap">
-    <div class="brand">
+    <a class="brand" href="#inicio">
       <span class="bn-badge">BN</span>
       <div>La <span>Bodeguita</span></div>
-    </div>
+    </a>
     <nav>
-      <a href="#servicios">BN Servicios</a>
-      <a href="#loteria">Tiempos (JPS)</a>
-      <a href="#abarrotes">Abarrotes</a>
-      <a href="#contacto">Contacto</a>
+      <a href="#inicio" data-r="inicio">Inicio</a>
+      <a href="#noticias" data-r="noticias">Noticias</a>
+      <a href="#eventos" data-r="eventos">Tiempos</a>
+      <a href="#pedidos" data-r="pedidos">Pedidos</a>
+      <a href="#contacto" data-r="contacto">Contacto</a>
     </nav>
   </div>
 </header>
 
-<section id="inicio" class="hero">
-  <div class="wrap">
-    <div class="bn-grande">BN</div>
-    <h1>Servicios, Tiempos y Abarrotes</h1>
-    <div class="line"></div>
-    <p>Trámites bancarios, Tiempos (juego oficial de la JPS) y productos básicos para su hogar, todo en un mismo lugar.</p>
-    <span class="agente">Agente autorizado Banco Nacional de Costa Rica</span>
-  </div>
-</section>
-
-<section id="negocios" class="pad">
-  <div class="wrap">
-    <h2 class="sec-title">Nuestros servicios</h2>
-    <p class="sec-sub">Tres líneas de negocio, una misma atención</p>
-    <div class="grid3">
-      <article class="card" id="servicios" style="--c:var(--bn-color)">
-        <div class="icono">🏦</div>
-        <h3>BN Servicios</h3>
-        <p>Gestión de trámites y pagos como agente autorizado del Banco Nacional.</p>
-        <ul>
-          <li>Pago de servicios</li>
-          <li>Recargas y trámites</li>
-          <li>Atención personalizada</li>
-        </ul>
-      </article>
-      <article class="card" id="loteria" style="--c:var(--lot-color)">
-        <div class="icono">🎯</div>
-        <h3>Tiempos JPS</h3>
-        <p>Venta del juego oficial de la Junta de Protección Social (JPS).</p>
-        <ul>
-          <li>Juego oficial JPS</li>
-          <li>Atención rápida</li>
-        </ul>
-        <p class="nota">Juego autorizado por la JPS. Juegue con responsabilidad.</p>
-      </article>
-      <article class="card" id="abarrotes" style="--c:var(--abr-color)">
-        <div class="icono">🛒</div>
-        <h3>La Bodeguita</h3>
-        <p>Productos de primera necesidad para su hogar.</p>
-        <ul>
-          <li>Despensa básica</li>
-          <li>Bebidas y limpieza</li>
-          <li>Precios competitivos</li>
-        </ul>
-      </article>
-    </div>
-  </div>
-</section>
-
-<section id="contacto" class="pad contacto">
-  <div class="wrap">
-    <h2 class="sec-title">Contáctenos</h2>
-    <p class="sec-sub">Reemplazar con los datos reales</p>
-    <p>📍 [Dirección] &nbsp;·&nbsp; 📞 [Teléfono] &nbsp;·&nbsp; ✉️ [Correo]</p>
-    <p>🕘 [Horario de atención]</p>
-  </div>
-</section>
+<main>
+  <div id="app" class="wrap"></div>
+</main>
 
 <footer>
   <div class="wrap">
-    <p><b>La Bodeguita</b> · Agente autorizado BN · © 2026</p>
-    <p style="margin-top:8px"><a href="#admin">Acceso administración</a></p>
+    <p><b>La Bodeguita</b> · Agente autorizado Banco Nacional de Costa Rica · © 2026</p>
+    <p class="aviso-jps">Tiempos es un juego oficial de la Junta de Protección Social (JPS). Juegue con responsabilidad.</p>
+    <p style="margin-top:10px"><a href="#admin">Acceso administración</a></p>
   </div>
 </footer>
 
-<!-- ============ PANEL ADMINISTRACIÓN ============ -->
-<section id="admin">
-  <div class="adm-head">
-    <strong>La Bodeguita · Administración</strong>
-    <button id="salir">Salir</button>
-  </div>
-  <div class="tabs" id="tabs">
-    <button data-tab="resumen" class="on">Resumen</button>
-    <button data-tab="bn">BN Servicios</button>
-    <button data-tab="loteria">Tiempos JPS</button>
-    <button data-tab="abarrotes">Abarrotes</button>
-  </div>
-  <div class="adm-body" id="pane"></div>
-</section>
-
 <script>
-/* ---------- CONFIGURACIÓN ---------- */
-const ADMIN_PIN = '1234';            // Cambiar por un PIN propio
-const KEY = 'bodeguita-admin-v1';
+/* ============ CONFIGURACIÓN ============ */
+const ADMIN_PIN = '1234';                 // Cambiar por un PIN propio
+const WA_NUMBER = '506XXXXXXXX';          // Número de WhatsApp con código de país (506...)
+const KEY = 'bodeguita-web-v1';
 
-const BIZ = {
-  bn:        { nombre: 'BN Servicios', color: '#00843d', tipos: ['Pago de servicio','Recarga','Trámite','Otro'] },
-  loteria:   { nombre: 'Tiempos JPS',  color: '#f4a300', tipos: ['Tiempos','Otro'] },
-  abarrotes: { nombre: 'Abarrotes',    color: '#d7263d', tipos: ['Venta mostrador','Venta a domicilio','Otro'] }
+const CATS = ['Tiempos JPS','BN Servicios','Abarrotes','General'];
+const TIPOS_PEDIDO = ['Abarrotes a domicilio','Servicio BN','Consulta de Tiempos'];
+const ESTADOS = ['Nuevo','En proceso','Listo','Entregado'];
+const CAT_COLOR = {
+  'Tiempos JPS':'var(--lot-color)',
+  'BN Servicios':'var(--bn-color)',
+  'Abarrotes':'var(--abr-color)',
+  'General':'var(--bn-dark)'
 };
 
-/* ---------- DATOS ---------- */
-let db;
-try { db = JSON.parse(localStorage.getItem(KEY)); } catch(e) {}
-if (!db) db = { ventas: [], productos: [] };
+/* ============ DATOS DE EJEMPLO (reemplazar) ============ */
+const SEED = {
+  noticias: [
+    { id:'n1', cat:'Abarrotes',    titulo:'Ejemplo: nuevos productos en La Bodeguita', fecha:'2026-10-10', resumen:'Texto de ejemplo. Reemplazar con la noticia real.' },
+    { id:'n2', cat:'BN Servicios', titulo:'Ejemplo: horario de servicios BN',          fecha:'2026-10-05', resumen:'Texto de ejemplo. Reemplazar con la información real.' },
+    { id:'n3', cat:'Tiempos JPS',  titulo:'Ejemplo: aviso sobre Tiempos',              fecha:'2026-10-01', resumen:'Texto de ejemplo. Reemplazar con el aviso oficial.' }
+  ],
+  eventos: [
+    { id:'e1', titulo:'Ejemplo: sorteo de Tiempos', fecha:'2026-11-01', lugar:'La Bodeguita', desc:'Reemplazar con la información real del sorteo.' }
+  ],
+  pedidos: []
+};
 
-function persist(){
+/* ============ ESTADO ============ */
+let db = load();
+let noticiasFiltro = { q:'', cat:'Todas' };
+let adminTab = 'noticias';
+let flash = '';
+
+function load(){
+  try {
+    const d = JSON.parse(localStorage.getItem(KEY));
+    if (d && Array.isArray(d.noticias)) return d;
+  } catch(e) {}
+  return JSON.parse(JSON.stringify(SEED));
+}
+function save(){
   try { localStorage.setItem(KEY, JSON.stringify(db)); }
   catch(e){ alert('No se pudo guardar en este navegador'); }
 }
 
-/* ---------- UTILIDADES ---------- */
-const fmt = n => new Intl.NumberFormat('es-CR',{style:'currency',currency:'CRC',maximumFractionDigits:0}).format(Number(n)||0);
+/* ============ UTILIDADES ============ */
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const hoy = () => new Date().toLocaleString('es-CR',{dateStyle:'short',timeStyle:'short'});
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7);
-const val = id => (document.getElementById(id)?.value ?? '');
+const fechaES = f => f ? new Date(f + 'T00:00:00').toLocaleDateString('es-CR',{day:'numeric',month:'long',year:'numeric'}) : '';
+const fechaHora = iso => new Date(iso).toLocaleString('es-CR',{dateStyle:'short',timeStyle:'short'});
+const hoyISO = () => new Date().toISOString().slice(0,10);
 
-function venta(biz, tipo, desc, monto){
-  db.ventas.unshift({ id: uid(), biz, tipo, desc, monto: Number(monto), fecha: hoy() });
-  persist();
-}
-
-/* ---------- VISTAS ---------- */
-let tabActual = 'resumen';
-
-function tablaVentas(filas, conNegocio = false){
-  if (!filas.length) return '<p class="empty">Sin registros todavía</p>';
-  return `<div class="scroll"><table>
-    <thead><tr>
-      <th>Fecha</th>${conNegocio ? '<th>Negocio</th>' : ''}<th>Tipo</th><th>Detalle</th><th class="num">Monto</th><th></th>
-    </tr></thead>
-    <tbody>${filas.map(v => `
-      <tr>
-        <td>${esc(v.fecha)}</td>
-        ${conNegocio ? `<td>${esc(BIZ[v.biz]?.nombre || v.biz)}</td>` : ''}
-        <td><span class="tag">${esc(v.tipo)}</span></td>
-        <td>${esc(v.desc)}</td>
-        <td class="num">${fmt(v.monto)}</td>
-        <td><button class="btn small del" data-act="del" data-id="${v.id}">✕</button></td>
-      </tr>`).join('')}
-    </tbody></table></div>`;
-}
-
-function vistaResumen(){
-  const kpi = (titulo, monto, cant, color) => `
-    <div class="kpi" style="--kc:${color}"><small>${esc(titulo)}</small><strong>${fmt(monto)}</strong>
-    <span style="color:var(--muted);font-size:13px">${cant} operaciones</span></div>`;
-  const total = db.ventas.reduce((s,v) => s + Number(v.monto||0), 0);
-  const porNegocio = Object.keys(BIZ).map(b => {
-    const f = db.ventas.filter(v => v.biz === b);
-    return kpi(BIZ[b].nombre, f.reduce((s,v) => s + Number(v.monto||0), 0), f.length, BIZ[b].color);
-  }).join('');
+/* ============ PÁGINAS ============ */
+function cardNoticia(n){
   return `
-    <div class="kpis">${kpi('Total general', total, db.ventas.length, '#0b3d24')}${porNegocio}</div>
-    <div class="panel"><h3>Últimos movimientos</h3>${tablaVentas(db.ventas.slice(0,15), true)}</div>`;
+    <article class="card" style="--c:${CAT_COLOR[n.cat] || 'var(--bn-dark)'}">
+      <span class="tag" style="background:${CAT_COLOR[n.cat] || 'var(--bn-dark)'}">${esc(n.cat)}</span>
+      <h3>${esc(n.titulo)}</h3>
+      <small>${fechaES(n.fecha)}</small>
+      <p>${esc(n.resumen)}</p>
+    </article>`;
 }
 
-function vistaLedger(biz){
-  const filas = db.ventas.filter(v => v.biz === biz);
+function pInicio(){
+  const quick = [
+    { t:'BN Servicios', i:'🏦', c:'var(--bn-color)',  r:'pedidos'  },
+    { t:'Tiempos JPS',  i:'🎯', c:'var(--lot-color)', r:'eventos'  },
+    { t:'Abarrotes',    i:'🛒', c:'var(--abr-color)', r:'pedidos'  },
+    { t:'Noticias',     i:'📰', c:'var(--bn-primary)',r:'noticias' },
+    { t:'Contacto',     i:'📞', c:'var(--bn-dark)',   r:'contacto' }
+  ];
   return `
-    <div class="panel">
-      <h3>Registrar — ${esc(BIZ[biz].nombre)}</h3>
-      <div class="form">
-        <div><label>Tipo</label>
-          <select id="f-tipo">${BIZ[biz].tipos.map(t => `<option>${esc(t)}</option>`).join('')}</select></div>
-        <div><label>Descripción</label><input id="f-desc" placeholder="Detalle"></div>
-        <div><label>Monto (₡)</label><input id="f-monto" type="number" min="0" step="any"></div>
-        <div><button class="btn gold" data-act="add" data-biz="${biz}">Registrar</button></div>
+    <section class="hero">
+      <div class="wrap">
+        <span class="pill">Agente autorizado Banco Nacional de Costa Rica</span>
+        <div class="bn-grande">BN</div>
+        <h1>Servicios, Tiempos <span>y Abarrotes</span></h1>
+        <p>Trámites bancarios, Tiempos (juego oficial de la JPS) y productos básicos para su hogar, todo en un mismo lugar.</p>
+        <div class="cta">
+          <a class="btn-pill gold" href="#pedidos">Hacer una solicitud</a>
+          <a class="btn-pill" href="#contacto">Contáctenos</a>
+        </div>
       </div>
-    </div>
-    <div class="panel"><h3>Historial</h3>${tablaVentas(filas)}</div>`;
-}
-
-function vistaAbarrotes(){
-  const filas = db.productos.map(p => `
-    <tr>
-      <td>${esc(p.nombre)}</td>
-      <td class="num">${fmt(p.precio)}</td>
-      <td class="num ${p.stock <= 5 ? 'low' : ''}">${p.stock}</td>
-      <td style="white-space:nowrap">
-        <button class="btn small gold" data-act="vender" data-id="${p.id}">Vender 1</button>
-        <button class="btn small del" data-act="delprod" data-id="${p.id}">✕</button>
-      </td>
-    </tr>`).join('');
-  return `
-    <div class="panel">
-      <h3>Nuevo producto</h3>
-      <div class="form">
-        <div><label>Nombre</label><input id="p-nombre"></div>
-        <div><label>Precio (₡)</label><input id="p-precio" type="number" min="0" step="any"></div>
-        <div><label>Existencias</label><input id="p-stock" type="number" min="0" step="1"></div>
-        <div><button class="btn gold" data-act="addprod">Agregar</button></div>
+    </section>
+    <section class="pad">
+      <h2 class="sec-title">Acceso rápido</h2>
+      <p class="sec-sub">Lo que necesitás, en unos segundos</p>
+      <div class="quick">
+        ${quick.map(q => `
+          <a class="qcard" href="#${q.r}" style="--c:${q.c}">
+            <div class="icono">${q.i}</div>
+            <h3>${esc(q.t)}</h3>
+          </a>`).join('')}
       </div>
-    </div>
-    <div class="panel"><h3>Inventario</h3>
-      ${db.productos.length
-        ? `<div class="scroll"><table>
-             <thead><tr><th>Producto</th><th class="num">Precio</th><th class="num">Stock</th><th></th></tr></thead>
-             <tbody>${filas}</tbody></table></div>`
-        : '<p class="empty">No hay productos registrados</p>'}
-    </div>
-    <div class="panel"><h3>Ventas de abarrotes</h3>
-      ${tablaVentas(db.ventas.filter(v => v.biz === 'abarrotes'))}
-    </div>`;
+    </section>
+    <section class="pad-s">
+      <h2 class="sec-title">Últimos avisos</h2>
+      <p class="sec-sub">Novedades de la bodeguita</p>
+      <div class="grid3">${db.noticias.slice(0,3).map(cardNoticia).join('')}</div>
+      <p style="text-align:center;margin-top:22px"><a href="#noticias">Ver todas las noticias →</a></p>
+    </section>`;
 }
 
-function render(){
-  const pane = document.getElementById('pane');
-  if (tabActual === 'resumen')        pane.innerHTML = vistaResumen();
-  else if (tabActual === 'abarrotes') pane.innerHTML = vistaAbarrotes();
-  else                                pane.innerHTML = vistaLedger(tabActual === 'bn' ? 'bn' : tabActual);
+function pNoticias(){
+  return `
+    <section class="pad-s">
+      <h2 class="sec-title">Noticias y avisos</h2>
+      <p class="sec-sub">Anuncios y novedades</p>
+      <div class="filtros">
+        <input id="buscar" placeholder="Buscar noticias…" value="${esc(noticiasFiltro.q)}">
+        <div class="chips">
+          ${['Todas', ...CATS].map(c => `
+            <button class="chip ${noticiasFiltro.cat === c ? 'on' : ''}" data-act="chip" data-cat="${esc(c)}">${esc(c)}</button>`).join('')}
+        </div>
+      </div>
+      <div class="grid3" id="lista-noticias"></div>
+    </section>`;
 }
 
-function showTab(t){
-  tabActual = t;
-  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === t));
-  render();
+function filtrarNoticias(){
+  const el = document.getElementById('lista-noticias');
+  if (!el) return;
+  const q = noticiasFiltro.q.toLowerCase();
+  const lista = db.noticias.filter(n =>
+    (noticiasFiltro.cat === 'Todas' || n.cat === noticiasFiltro.cat) &&
+    (n.titulo + ' ' + n.resumen).toLowerCase().includes(q)
+  );
+  el.innerHTML = lista.length ? lista.map(cardNoticia).join('') : '<p class="empty">No hay noticias con ese filtro</p>';
 }
 
-/* ---------- EVENTOS ---------- */
-document.getElementById('tabs').addEventListener('click', e => {
-  const b = e.target.closest('button[data-tab]');
-  if (b) showTab(b.dataset.tab);
+function pEventos(){
+  const lista = [...db.eventos].sort((a,b) => a.fecha.localeCompare(b.fecha));
+  return `
+    <section class="pad-s">
+      <h2 class="sec-title">Tiempos y eventos</h2>
+      <p class="sec-sub">Próximos sorteos y actividades</p>
+      <div style="max-width:720px;margin:0 auto">
+        ${lista.length ? lista.map(ev => {
+          const d = new Date(ev.fecha + 'T00:00:00');
+          const mes = d.toLocaleDateString('es-CR',{month:'short'}).replace('.','').toUpperCase();
+          return `
+          <div class="evento">
+            <div class="fecha-box"><b>${d.getDate()}</b><span>${mes}</span></div>
+            <div>
+              <h3>${esc(ev.titulo)}</h3>
+              <small>📍 ${esc(ev.lugar)} · ${fechaES(ev.fecha)}</small>
+              <p>${esc(ev.desc)}</p>
+            </div>
+          </div>`;
+        }).join('') : '<p class="empty">No hay eventos programados</p>'}
+      </div>
+    </section>`;
+}
+
+function pPedidos(){
+  return `
+    <section class="pad-s">
+      <h2 class="sec-title">Pedidos y solicitudes</h2>
+      <p class="sec-sub">Déjenos su solicitud y lo atendemos a la brevedad</p>
+      ${flash ? `<div class="flash">${flash}</div>` : ''}
+      <form id="form-pedido" class="form-pub">
+        <div><label>Tipo de solicitud</label>
+          <select name="tipo">${TIPOS_PEDIDO.map(t => `<option>${esc(t)}</option>`).join('')}</select></div>
+        <div><label>Nombre</label><input name="nombre" required></div>
+        <div><label>Teléfono</label><input name="tel" type="tel" required></div>
+        <div><label>Detalle de la solicitud</label>
+          <textarea name="detalle" rows="4" required placeholder="Ej. 2 kilos de arroz, 1 jabón de platos…"></textarea></div>
+        <button class="btn gold" type="submit">Enviar solicitud</button>
+      </form>
+    </section>`;
+}
+
+function pContacto(){
+  return `
+    <section class="pad-s">
+      <h2 class="sec-title">Contáctenos</h2>
+      <p class="sec-sub">Estamos para ayudarle</p>
+      <div class="contacto-box">
+        <p>📍 [Dirección]</p>
+        <p>📞 [Teléfono]</p>
+        <p>✉️ [Correo]</p>
+        <p>🕘 [Horario de atención]</p>
+        <p style="margin-top:18px">
+          <a class="btn wa" style="color:#fff;text-decoration:none;display:inline-block" target="_blank" rel="noopener"
+             href="https://wa.me/${WA_NUMBER}?text=${encodeURIComponent('Hola, quisiera más información.')}">Escribir por WhatsApp</a>
+        </p>
+      </div>
+    </section>`;
+}
+
+function pAdmin(){
+  const tabs = [['noticias','Noticias'],['eventos','Tiempos y eventos'],['pedidos','Pedidos']];
+  let cuerpo = '';
+
+  if (adminTab === 'noticias'){
+    cuerpo = `
+      <div class="panel">
+        <h3>Nueva noticia</h3>
+        <form id="form-noticia" class="grid-form">
+          <div><label>Título</label><input name="titulo" required></div>
+          <div><label>Categoría</label><select name="cat">${CATS.map(c => `<option>${esc(c)}</option>`).join('')}</select></div>
+          <div><label>Fecha</label><input name="fecha" type="date" value="${hoyISO()}" required></div>
+          <div style="grid-column:1/-1"><label>Resumen</label><textarea name="resumen" rows="3" required></textarea></div>
+          <div><button class="btn gold" type="submit">Publicar</button></div>
+        </form>
+      </div>
+      <div class="panel"><h3>Noticias publicadas</h3>
+        <div class="scroll"><table>
+          <thead><tr><th>Fecha</th><th>Categoría</th><th>Título</th><th></th></tr></thead>
+          <tbody>${db.noticias.map(n => `
+            <tr><td>${esc(n.fecha)}</td><td>${esc(n.cat)}</td><td>${esc(n.titulo)}</td>
+            <td><button class="btn small del" data-act="del-noticia" data-id="${n.id}">Eliminar</button></td></tr>`).join('')}
+          </tbody>
+        </table></div>
+      </div>`;
+  }
+
+  if (adminTab === 'eventos'){
+    cuerpo = `
+      <div class="panel">
+        <h3>Nuevo evento</h3>
+        <form id="form-evento" class="grid-form">
+          <div><label>Título</label><input name="titulo" required></div>
+          <div><label>Fecha</label><input name="fecha" type="date" value="${hoyISO()}" required></div>
+          <div><label>Lugar</label><input name="lugar" value="La Bodeguita"></div>
+          <div style="grid-column:1/-1"><label>Descripción</label><textarea name="desc" rows="3"></textarea></div>
+          <div><button class="btn gold" type="submit">Publicar</button></div>
+        </form>
+      </div>
+      <div class="panel"><h3>Eventos</h3>
+        <div class="scroll"><table>
+          <thead><tr><th>Fecha</th><th>Título</th><th>Lugar</th><th></th></tr></thead>
+          <tbody>${db.eventos.map(e => `
+            <tr><td>${esc(e.fecha)}</td><td>${esc(e.titulo)}</td><td>${esc(e.lugar)}</td>
+            <td><button class="btn small del" data-act="del-evento" data-id="${e.id}">Eliminar</button></td></tr>`).join('')}
+          </tbody>
+        </table></div>
+      </div>`;
+  }
+
+  if (adminTab === 'pedidos'){
+    cuerpo = `
+      <div class="panel"><h3>Solicitudes recibidas</h3>
+        ${db.pedidos.length ? `<div class="scroll"><table>
+          <thead><tr><th>Fecha</th><th>Tipo</th><th>Cliente</th><th>Detalle</th><th>Estado</th><th></th></tr></thead>
+          <tbody>${db.pedidos.map(p => `
+            <tr>
+              <td>${fechaHora(p.fecha)}</td>
+              <td>${esc(p.tipo)}</td>
+              <td>${esc(p.nombre)}<br><small>${esc(p.tel)}</small></td>
+              <td>${esc(p.detalle)}</td>
+              <td><select data-act="estado" data-id="${p.id}">
+                ${ESTADOS.map(s => `<option ${s === p.estado ? 'selected' : ''}>${s}</option>`).join('')}
+              </select></td>
+              <td><button class="btn small del" data-act="del-pedido" data-id="${p.id}">✕</button></td>
+            </tr>`).join('')}
+          </tbody></table></div>`
+        : '<p class="empty">No hay solicitudes todavía</p>'}
+      </div>`;
+  }
+
+  return `
+    <section class="pad-s">
+      <div class="adm-head">
+        <h2>Administración</h2>
+        <button class="btn small" data-act="logout">Salir</button>
+      </div>
+      <div class="adm-tabs">
+        ${tabs.map(([k,l]) => `<button class="${adminTab === k ? 'on' : ''}" data-act="atab" data-t="${k}">${l}</button>`).join('')}
+      </div>
+      ${cuerpo}
+    </section>`;
+}
+
+/* ============ RENDER Y RUTAS ============ */
+function render(r){
+  const pages = { inicio:pInicio, noticias:pNoticias, eventos:pEventos, pedidos:pPedidos, contacto:pContacto, admin:pAdmin };
+  const fn = pages[r] || pInicio;
+  document.getElementById('app').innerHTML = fn();
+  document.querySelectorAll('nav a').forEach(a => a.classList.toggle('on', a.dataset.r === r));
+  if (r === 'noticias') filtrarNoticias();
+  window.scrollTo(0,0);
+}
+
+function route(){
+  let r = location.hash.replace('#','') || 'inicio';
+  if (r === 'admin' && sessionStorage.getItem('adm') !== 'ok'){
+    const pin = prompt('PIN de administración');
+    if (pin === ADMIN_PIN){
+      sessionStorage.setItem('adm','ok');
+    } else {
+      if (pin !== null) alert('PIN incorrecto');
+      location.hash = 'inicio';
+      return;
+    }
+  }
+  if (r !== 'pedidos') flash = '';
+  render(r);
+}
+window.addEventListener('hashchange', route);
+
+/* ============ EVENTOS ============ */
+const app = document.getElementById('app');
+
+app.addEventListener('input', e => {
+  if (e.target.id === 'buscar'){
+    noticiasFiltro.q = e.target.value;
+    filtrarNoticias();
+  }
 });
 
-document.getElementById('pane').addEventListener('click', e => {
+app.addEventListener('change', e => {
+  const el = e.target.closest('[data-act="estado"]');
+  if (el){
+    const p = db.pedidos.find(x => x.id === el.dataset.id);
+    if (p){ p.estado = el.value; save(); }
+  }
+});
+
+app.addEventListener('click', e => {
   const b = e.target.closest('[data-act]');
   if (!b) return;
   const act = b.dataset.act;
 
-  if (act === 'add'){
-    const biz = b.dataset.biz;
-    const desc = val('f-desc').trim();
-    const monto = parseFloat(val('f-monto'));
-    if (!desc || !(monto > 0)) { alert('Complete la descripción y un monto válido'); return; }
-    venta(biz, val('f-tipo'), desc, monto);
-    render();
+  if (act === 'chip'){
+    noticiasFiltro.cat = b.dataset.cat;
+    document.querySelectorAll('.chip').forEach(c => c.classList.toggle('on', c.dataset.cat === noticiasFiltro.cat));
+    filtrarNoticias();
   }
-
-  if (act === 'del'){
-    if (confirm('¿Eliminar este registro?')){
-      db.ventas = db.ventas.filter(v => v.id !== b.dataset.id);
-      persist(); render();
-    }
+  if (act === 'atab'){ adminTab = b.dataset.t; render('admin'); }
+  if (act === 'logout'){
+    sessionStorage.removeItem('adm');
+    location.hash = 'inicio';
   }
-
-  if (act === 'addprod'){
-    const nombre = val('p-nombre').trim();
-    const precio = parseFloat(val('p-precio'));
-    const stock = parseInt(val('p-stock'), 10);
-    if (!nombre || !(precio >= 0) || isNaN(stock) || stock < 0){
-      alert('Complete nombre, precio y existencias'); return;
-    }
-    db.productos.push({ id: uid(), nombre, precio, stock });
-    persist(); render();
+  if (act === 'del-noticia' && confirm('¿Eliminar esta noticia?')){
+    db.noticias = db.noticias.filter(n => n.id !== b.dataset.id);
+    save(); render('admin');
   }
-
-  if (act === 'vender'){
-    const p = db.productos.find(x => x.id === b.dataset.id);
-    if (!p || p.stock < 1){ alert('Sin existencias'); return; }
-    p.stock--;
-    venta('abarrotes', 'Venta mostrador', p.nombre, p.precio);
-    persist(); render();
+  if (act === 'del-evento' && confirm('¿Eliminar este evento?')){
+    db.eventos = db.eventos.filter(x => x.id !== b.dataset.id);
+    save(); render('admin');
   }
-
-  if (act === 'delprod'){
-    if (confirm('¿Eliminar este producto?')){
-      db.productos = db.productos.filter(x => x.id !== b.dataset.id);
-      persist(); render();
-    }
+  if (act === 'del-pedido' && confirm('¿Eliminar esta solicitud?')){
+    db.pedidos = db.pedidos.filter(x => x.id !== b.dataset.id);
+    save(); render('admin');
   }
 });
 
-/* ---------- ACCESO ADMIN ---------- */
-function abrirAdmin(){
-  document.body.classList.add('is-admin');
-  window.scrollTo(0,0);
-  showTab(tabActual);
-}
+app.addEventListener('submit', e => {
+  e.preventDefault();
+  const f = e.target;
+  const d = Object.fromEntries(new FormData(f).entries());
 
-function entrarAdmin(){
-  if (sessionStorage.getItem('adm') === 'ok'){ abrirAdmin(); return; }
-  const pin = prompt('PIN de administración');
-  if (pin === ADMIN_PIN){
-    sessionStorage.setItem('adm','ok');
-    abrirAdmin();
-  } else {
-    if (pin !== null) alert('PIN incorrecto');
-    location.hash = '';
+  if (f.id === 'form-pedido'){
+    const id = uid();
+    db.pedidos.unshift({ id, tipo:d.tipo, nombre:d.nombre.trim(), tel:d.tel.trim(), detalle:d.detalle.trim(), estado:'Nuevo', fecha:new Date().toISOString() });
+    save();
+    const texto = `Hola, soy ${d.nombre}. Solicitud: ${d.tipo}. ${d.detalle}`;
+    flash = `¡Gracias ${esc(d.nombre)}! Recibimos su solicitud. Si quiere confirmarla más rápido, escríbanos por <a href="https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(texto)}" target="_blank" rel="noopener">WhatsApp</a>.`;
+    render('pedidos');
   }
-}
 
-function route(){
-  if (location.hash === '#admin') entrarAdmin();
-  else document.body.classList.remove('is-admin');
-}
+  if (f.id === 'form-noticia'){
+    db.noticias.unshift({ id:uid(), cat:d.cat, titulo:d.titulo.trim(), fecha:d.fecha, resumen:d.resumen.trim() });
+    save(); render('admin');
+  }
 
-document.getElementById('salir').addEventListener('click', () => {
-  sessionStorage.removeItem('adm');
-  location.hash = '';
+  if (f.id === 'form-evento'){
+    db.eventos.push({ id:uid(), titulo:d.titulo.trim(), fecha:d.fecha, lugar:(d.lugar||'').trim(), desc:(d.desc||'').trim() });
+    save(); render('admin');
+  }
 });
 
-window.addEventListener('hashchange', route);
 route();
 </script>
 </body>
