@@ -265,4 +265,499 @@ function proximoSorteo(){
   Object.entries(SORTEOS).forEach(([nombre, horas]) =>
     horas.forEach(([h,m]) => todos.push({ nombre, h, m, min:h*60+m }))
   );
-  todos.s
+  todos.sort((a,b) => a.min - b.min);
+  const next = todos.find(t => t.min > now);
+  if (next) return { ...next, en: next.min - now, manana: false };
+  return { ...todos[0], en: 1440 - now + todos[0].min, manana: true };
+}
+function fmtHora(h,m){ return `${h % 12 || 12}:${String(m).padStart(2,'0')} ${h < 12 ? 'AM' : 'PM'}`; }
+function enTexto(min){
+  const h = Math.floor(min / 60), m = min % 60;
+  return h ? `${h} h ${m} min` : `${m} min`;
+}
+function updateCountdown(){
+  const pr = proximoSorteo();
+  document.querySelectorAll('[data-prox="val"]').forEach(el => el.textContent = `${pr.nombre} · ${fmtHora(pr.h, pr.m)}`);
+  document.querySelectorAll('[data-prox="hint"]').forEach(el => el.textContent = `en ${enTexto(pr.en)}${pr.manana ? ' (mañana)' : ''}`);
+  document.querySelectorAll('.chip-hora').forEach(c =>
+    c.classList.toggle('is-next', c.dataset.sorteo === pr.nombre && +c.dataset.min === pr.min)
+  );
+}
+
+/* ============ PIEZAS DE INTERFAZ ============ */
+const td = (label, html) => `<td data-label="${label}">${html}</td>`;
+const vacio = msg => `<div class="panel panel--empty"><p>${msg}</p></div>`;
+const metric = (label, value, hint = '', tone = 'default') => `
+  <div class="metric-card metric-card--${tone}">
+    <p class="metric-card__label">${label}</p>
+    <p class="metric-card__value mono">${value}</p>
+    ${hint ? `<p class="metric-card__hint">${hint}</p>` : ''}
+  </div>`;
+const field = (label, html, cls = '') => `<label class="field ${cls}">${label}${html}</label>`;
+const tabla = (heads, rows) => `
+  <div class="table-wrap"><table class="orders-table">
+    <thead><tr>${heads.map(h => `<th>${h}</th>`).join('')}</tr></thead>
+    <tbody>${rows}</tbody>
+  </table></div>`;
+
+function tablaMovs(lista, conNegocio){
+  if (!lista.length) return vacio('Sin movimientos todavía');
+  const heads = ['Fecha', ...(conNegocio ? ['Negocio'] : []), 'Tipo', 'Detalle', 'Pago', 'Monto', ''];
+  const rows = lista.map(v => {
+    const b = NEGOCIOS[v.biz] || { nombre: v.biz, badge: 'gray' };
+    return `<tr>
+      ${td('Fecha', fechaHora(v.fecha))}
+      ${conNegocio ? td('Negocio', esc(b.nombre)) : ''}
+      ${td('Tipo', `<span class="badge badge--${b.badge}">${esc(v.tipo)}</span>`)}
+      ${td('Detalle', esc(v.desc) || '—')}
+      ${td('Pago', esc(v.pago))}
+      ${td('Monto', `<span class="mono">${fmt(monto(v))}</span>`)}
+      ${td('', `<button class="action-btn action-btn--red" data-act="del-venta" data-id="${v.id}">Eliminar</button>`)}
+    </tr>`;
+  }).join('');
+  return tabla(heads, rows);
+}
+
+function panelSorteos(){
+  return `
+    <section class="section-block">
+      <h2 class="section-block__title">Horarios de sorteo</h2>
+      <div class="panel" style="padding:20px">
+        <div class="sorteos-grid">
+          ${Object.entries(SORTEOS).map(([nombre, horas]) => `
+            <div class="sorteo-card">
+              <h3>${nombre}</h3>
+              <div class="chips">
+                ${horas.map(([h,m]) => `<span class="chip-hora" data-sorteo="${nombre}" data-min="${h*60+m}">${fmtHora(h,m)}</span>`).join('')}
+              </div>
+            </div>`).join('')}
+        </div>
+        <p class="panel__hint" style="margin-top:14px">
+          Próximo sorteo: <strong data-prox="val"></strong> <span data-prox="hint"></span> · Horario de Costa Rica
+        </p>
+      </div>
+    </section>`;
+}
+
+/* ============ VISTAS ============ */
+function vistaLogin(){
+  return `
+    <div class="login-screen">
+      <div class="canopy canopy--one" aria-hidden="true"></div>
+      <div class="canopy canopy--two" aria-hidden="true"></div>
+      <form class="login-card" data-form="login">
+        <div class="sidebar__mark sidebar__mark--lg">LB</div>
+        <h2>La Bodeguita</h2>
+        <p class="panel__hint">Panel Admin · ingrese el PIN</p>
+        ${field('PIN', '<input name="pin" type="password" inputmode="numeric" required autocomplete="off">')}
+        <button class="btn-primary" type="submit">Entrar</button>
+        <p class="login-error" id="login-err"></p>
+      </form>
+    </div>`;
+}
+
+function vistaResumen(){
+  const nuevos = db.pedidos.filter(p => p.estado === 'Nuevo').length;
+  const bajo = db.productos.filter(p => p.stock <= p.minimo).length;
+  return `
+    <div class="metrics-grid">
+      ${metric('Neto de hoy', fmt(neto(movsDeHoy())), 'Todos los negocios')}
+      ${metric('Pedidos nuevos', nuevos, 'Sin atender', 'amber')}
+      ${metric('Bajo stock', bajo, 'Productos en mínimo', 'mint')}
+      ${metric('Próximo sorteo', '<span data-prox="val" style="font-size:20px"></span>', '<span data-prox="hint"></span>')}
+    </div>
+    <section class="section-block">
+      <h2 class="section-block__title">Últimos movimientos</h2>
+      <div class="panel">${tablaMovs(db.ventas.slice(0,10), true)}</div>
+    </section>`;
+}
+
+function vistaNegocio(k){
+  const n = NEGOCIOS[k];
+  const movs = db.ventas.filter(v => v.biz === k);
+  const hoy = neto(movs.filter(v => fechaCR(v.fecha) === hoyCR()));
+  let html = '';
+
+  if (k === 'tiempos') html += panelSorteos();
+  if (k === 'loteria' || k === 'chances') {
+    html += `<div class="panel"><div class="panel--empty"><p><strong>Horario de sorteo:</strong> pendiente de confirmar con la JPS.</p></div></div>`;
+  }
+
+  html += `
+    <div class="metrics-grid">
+      ${metric('Neto de hoy', fmt(hoy), n.nombre)}
+      ${metric('Neto acumulado', fmt(neto(movs)), `${movs.length} movimientos`, 'mint')}
+    </div>
+    <section class="section-block">
+      <h2 class="section-block__title">Registrar movimiento</h2>
+      <form class="panel" data-form="venta" data-biz="${k}">
+        <div class="form-grid">
+          ${field('Tipo', `<select name="tipo">${n.tipos.map(t => `<option>${esc(t)}</option>`).join('')}</select>`)}
+          ${field('Detalle (opcional)', '<input name="desc" placeholder="Ej. referencia o cliente">')}
+          ${field('Monto (₡)', '<input name="monto" type="number" min="0" step="any" required>')}
+          ${field('Pago', `<select name="pago">${PAGOS.map(p => `<option>${p}</option>`).join('')}</select>`)}
+          <div class="form-actions full"><button class="btn-primary" type="submit">Registrar</button></div>
+        </div>
+      </form>
+    </section>
+    <section class="section-block">
+      <h2 class="section-block__title">Movimientos</h2>
+      <div class="panel">${tablaMovs(movs, false)}</div>
+    </section>`;
+  return html;
+}
+
+function vistaPedidos(){
+  const form = `
+    <section class="section-block">
+      <h2 class="section-block__title">Nueva solicitud</h2>
+      <form class="panel" data-form="pedido">
+        <div class="form-grid">
+          ${field('Tipo', `<select name="tipo">${TIPOS_PEDIDO.map(t => `<option>${esc(t)}</option>`).join('')}</select>`)}
+          ${field('Cliente', '<input name="nombre" required>')}
+          ${field('Teléfono', '<input name="tel" type="tel" required>')}
+          ${field('Detalle', '<textarea name="detalle" rows="2" required placeholder="Ej. 2 kilos de arroz, 1 jabón…"></textarea>', 'full')}
+          <div class="form-actions full"><button class="btn-primary" type="submit">Registrar solicitud</button></div>
+        </div>
+      </form>
+    </section>`;
+
+  const rows = db.pedidos.map(p => {
+    const siguiente = ESTADOS[ESTADOS.indexOf(p.estado) + 1];
+    return `<tr>
+      ${td('Fecha', fechaHora(p.fecha))}
+      ${td('Tipo', esc(p.tipo))}
+      ${td('Cliente', `${esc(p.nombre)}<br><span class="order-sub">${esc(p.tel)}</span>`)}
+      ${td('Detalle', `<span class="order-items">${esc(p.detalle)}</span>`)}
+      ${td('Estado', `<span class="badge badge--${ESTADO_BADGE[p.estado]}">${p.estado}</span>`)}
+      ${td('Acciones', `<div class="order-actions">
+        ${siguiente ? `<button class="action-btn action-btn--blue" data-act="avanzar" data-id="${p.id}">Pasar a ${siguiente}</button>` : ''}
+        <button class="action-btn action-btn--red" data-act="del-pedido" data-id="${p.id}">Eliminar</button>
+      </div>`)}
+    </tr>`;
+  }).join('');
+
+  return form + `
+    <section class="section-block">
+      <h2 class="section-block__title">Solicitudes</h2>
+      <div class="panel">${db.pedidos.length
+        ? tabla(['Fecha','Tipo','Cliente','Detalle','Estado','Acciones'], rows)
+        : vacio('No hay solicitudes todavía')}</div>
+    </section>`;
+}
+
+function vistaCaja(){
+  const hoyL = movsDeHoy();
+  const filas = Object.entries(NEGOCIOS).map(([k,n]) => {
+    const l = db.ventas.filter(v => v.biz === k);
+    return `<tr>
+      ${td('Negocio', `<span class="badge badge--${n.badge}">${n.nombre}</span>`)}
+      ${td('Movimientos', l.length)}
+      ${td('Neto hoy', `<span class="mono">${fmt(neto(l.filter(v => fechaCR(v.fecha) === hoyCR())))}</span>`)}
+      ${td('Neto acumulado', `<span class="mono">${fmt(neto(l))}</span>`)}
+    </tr>`;
+  }).join('');
+
+  return `
+    <div class="metrics-grid">
+      ${metric('Neto de hoy', fmt(neto(hoyL)), 'Todos los negocios')}
+      ${metric('Efectivo hoy', fmt(sumaPago(hoyL,'Efectivo')))}
+      ${metric('SINPE hoy', fmt(sumaPago(hoyL,'SINPE Móvil')), '', 'mint')}
+      ${metric('Tarjeta hoy', fmt(sumaPago(hoyL,'Tarjeta')), '', 'amber')}
+    </div>
+    <section class="section-block">
+      <h2 class="section-block__title">Neto por negocio</h2>
+      <div class="panel">${tabla(['Negocio','Movimientos','Neto hoy','Neto acumulado'], filas)}</div>
+    </section>
+    <section class="section-block">
+      <h2 class="section-block__title">Todos los movimientos</h2>
+      <div class="panel">${tablaMovs(db.ventas, true)}</div>
+    </section>`;
+}
+
+function vistaInventario(){
+  const form = `
+    <section class="section-block">
+      <h2 class="section-block__title">Nuevo producto</h2>
+      <form class="panel" data-form="producto">
+        <div class="form-grid">
+          ${field('Nombre', '<input name="nombre" required>')}
+          ${field('Precio (₡)', '<input name="precio" type="number" min="0" step="any" required>')}
+          ${field('Existencias', '<input name="stock" type="number" min="0" step="1" required>')}
+          ${field('Mínimo', '<input name="minimo" type="number" min="0" step="1" value="5" required>')}
+          <div class="form-actions full"><button class="btn-primary" type="submit">Agregar producto</button></div>
+        </div>
+      </form>
+    </section>`;
+
+  const rows = db.productos.map(p => `<tr>
+    ${td('Producto', esc(p.nombre))}
+    ${td('Precio', `<span class="mono">${fmt(p.precio)}</span>`)}
+    ${td('Existencias', `<div class="stock-ctrl">
+      <button class="action-btn" data-act="stock" data-id="${p.id}" data-d="-1" aria-label="Restar">−</button>
+      <span class="mono ${p.stock <= p.minimo ? 'is-low' : ''}">${p.stock}</span>
+      <button class="action-btn" data-act="stock" data-id="${p.id}" data-d="1" aria-label="Sumar">+</button>
+    </div>`)}
+    ${td('Mínimo', p.minimo)}
+    ${td('Acciones', `<div class="order-actions">
+      <button class="action-btn action-btn--green" data-act="vender" data-id="${p.id}" ${p.stock < 1 ? 'disabled' : ''}>Vender 1</button>
+      <button class="action-btn action-btn--red" data-act="del-producto" data-id="${p.id}">Eliminar</button>
+    </div>`)}
+  </tr>`).join('');
+
+  return form + `
+    <section class="section-block">
+      <h2 class="section-block__title">Inventario</h2>
+      <div class="panel">${db.productos.length
+        ? tabla(['Producto','Precio','Existencias','Mínimo','Acciones'], rows)
+        : vacio('No hay productos registrados')}</div>
+    </section>
+    <section class="section-block">
+      <h2 class="section-block__title">Ventas de abarrotes</h2>
+      <div class="panel">${tablaMovs(db.ventas.filter(v => v.biz === 'abarrotes'), false)}</div>
+    </section>`;
+}
+
+function vistaEquipo(){
+  const activos = db.equipo.filter(e => e.activo).length;
+  const form = `
+    <section class="section-block">
+      <h2 class="section-block__title">Nuevo integrante</h2>
+      <form class="panel" data-form="equipo">
+        <div class="form-grid">
+          ${field('Nombre', '<input name="nombre" required>')}
+          ${field('Rol', `<select name="rol">${ROLES.map(r => `<option>${esc(r)}</option>`).join('')}</select>`)}
+          <div class="form-actions full"><button class="btn-primary" type="submit">Agregar</button></div>
+        </div>
+      </form>
+    </section>`;
+  const rows = db.equipo.map(e => `<tr>
+    ${td('Nombre', esc(e.nombre))}
+    ${td('Rol', `<span class="badge badge--blue">${esc(e.rol)}</span>`)}
+    ${td('Estado', `<span class="badge badge--${e.activo ? 'green' : 'gray'}">${e.activo ? 'Activo' : 'Inactivo'}</span>`)}
+    ${td('Acciones', `<div class="order-actions">
+      <button class="action-btn action-btn--amber" data-act="toggle-equipo" data-id="${e.id}">${e.activo ? 'Desactivar' : 'Activar'}</button>
+      <button class="action-btn action-btn--red" data-act="del-equipo" data-id="${e.id}">Eliminar</button>
+    </div>`)}
+  </tr>`).join('');
+
+  return `
+    <div class="metrics-grid">
+      ${metric('Integrantes', db.equipo.length, 'Registrados')}
+      ${metric('Activos', activos, 'Marcados como activos', 'mint')}
+    </div>` + form + `
+    <section class="section-block">
+      <h2 class="section-block__title">Lista del equipo</h2>
+      <div class="panel">${db.equipo.length
+        ? tabla(['Nombre','Rol','Estado','Acciones'], rows)
+        : vacio('Todavía no hay integrantes registrados')}</div>
+    </section>`;
+}
+
+/* ============ SHELL Y RENDER ============ */
+function shell(sec, body){
+  const [titulo, sub] = TITLES[sec];
+  const bajo = db.productos.filter(p => p.stock <= p.minimo);
+  const banner = bajo.length
+    ? `<div class="low-stock">⚠ Bajo stock: ${bajo.map(p => esc(p.nombre)).join(', ')}</div>`
+    : '';
+  return `
+    <div class="app-shell">
+      <div class="canopy canopy--one" aria-hidden="true"></div>
+      <div class="canopy canopy--two" aria-hidden="true"></div>
+
+      <aside class="sidebar">
+        <div class="sidebar__brand">
+          <div class="sidebar__mark">LB</div>
+          <div>
+            <p class="sidebar__title">La Bodeguita</p>
+            <p class="sidebar__subtitle">Panel Admin</p>
+          </div>
+        </div>
+        <nav class="sidebar__nav">
+          ${NAV.map(([id,label,icon]) => `
+            <a class="sidebar__link ${sec === id ? 'is-active' : ''}" href="#${id}" ${sec === id ? 'aria-current="page"' : ''}>
+              <span class="sidebar__icon" aria-hidden="true">${icon}</span>${label}
+            </a>`).join('')}
+        </nav>
+        <div class="sidebar__footer">
+          <p>Agente autorizado BN</p>
+          <p class="mono sidebar__project">Administración</p>
+          <button class="btn-secondary" style="margin-top:8px" data-act="logout">Cerrar sesión</button>
+        </div>
+      </aside>
+
+      <div class="app-main">
+        <header class="topbar">
+          <div>
+            <h1 class="topbar__title">${titulo}</h1>
+            <p class="topbar__subtitle">${sub}</p>
+          </div>
+          <div class="topbar__right">
+            <div class="topbar__status is-live"><span class="topbar__dot"></span>Datos guardados en este equipo</div>
+            <button class="topbar__logout" data-act="logout">Salir</button>
+          </div>
+        </header>
+        ${banner}
+        <main class="app-content">${body}</main>
+      </div>
+    </div>`;
+}
+
+function renderPanel(){
+  const app = document.getElementById('app');
+  if (!logged) { app.innerHTML = vistaLogin(); return; }
+
+  const sec = location.hash.replace('#','') || 'resumen';
+  const vistas = {
+    resumen: vistaResumen,
+    pedidos: vistaPedidos,
+    bn: () => vistaNegocio('bn'),
+    tiempos: () => vistaNegocio('tiempos'),
+    loteria: () => vistaNegocio('loteria'),
+    chances: () => vistaNegocio('chances'),
+    caja: vistaCaja,
+    inventario: vistaInventario,
+    equipo: vistaEquipo
+  };
+  const key = vistas[sec] ? sec : 'resumen';
+  app.innerHTML = shell(key, vistas[key]());
+  updateCountdown();
+}
+
+function render(){
+  try { renderPanel(); }
+  catch (err) {
+    console.error(err);
+    document.getElementById('app').innerHTML =
+      `<div style="padding:40px;font-family:system-ui,sans-serif"><h2>No se pudo cargar el panel</h2>
+       <p style="margin:10px 0">${esc(err && err.message)}</p>
+       <button onclick="location.reload()" style="padding:10px 16px">Recargar</button></div>`;
+  }
+}
+
+/* ============ EVENTOS ============ */
+const app = document.getElementById('app');
+
+app.addEventListener('click', e => {
+  const b = e.target.closest('[data-act]');
+  if (!b) return;
+  const act = b.dataset.act;
+  const id = b.dataset.id;
+
+  if (act === 'logout'){
+    logged = false;
+    try { sessionStorage.removeItem(SESS); } catch(_) {}
+    location.hash = '';
+    render();
+  }
+
+  if (act === 'del-venta' && confirm('¿Eliminar este movimiento?')){
+    db.ventas = db.ventas.filter(v => v.id !== id);
+    guardar(); render();
+  }
+
+  if (act === 'avanzar'){
+    const p = db.pedidos.find(x => x.id === id);
+    if (p){
+      const i = ESTADOS.indexOf(p.estado);
+      p.estado = ESTADOS[Math.min(i + 1, ESTADOS.length - 1)];
+      guardar(); render();
+    }
+  }
+
+  if (act === 'del-pedido' && confirm('¿Eliminar esta solicitud?')){
+    db.pedidos = db.pedidos.filter(x => x.id !== id);
+    guardar(); render();
+  }
+
+  if (act === 'stock'){
+    const p = db.productos.find(x => x.id === id);
+    if (p){
+      p.stock = Math.max(0, p.stock + Number(b.dataset.d));
+      guardar(); render();
+    }
+  }
+
+  if (act === 'vender'){
+    const p = db.productos.find(x => x.id === id);
+    if (!p || p.stock < 1) return;
+    p.stock--;
+    db.ventas.unshift({ id:uid(), biz:'abarrotes', tipo:'Venta mostrador', desc:p.nombre, monto:p.precio, pago:'Efectivo', fecha:new Date().toISOString() });
+    guardar(); render();
+  }
+
+  if (act === 'toggle-equipo'){
+    const e = db.equipo.find(x => x.id === id);
+    if (e){ e.activo = !e.activo; guardar(); render(); }
+  }
+
+  if (act === 'del-equipo' && confirm('¿Eliminar este integrante?')){
+    db.equipo = db.equipo.filter(x => x.id !== id);
+    guardar(); render();
+  }
+
+  if (act === 'del-producto' && confirm('¿Eliminar este producto?')){
+    db.productos = db.productos.filter(x => x.id !== id);
+    guardar(); render();
+  }
+});
+
+app.addEventListener('submit', e => {
+  e.preventDefault();
+  const f = e.target;
+  const d = Object.fromEntries(new FormData(f).entries());
+
+  if (f.dataset.form === 'login'){
+    if (d.pin === ADMIN_PIN){
+      logged = true;
+      try { sessionStorage.setItem(SESS, 'ok'); } catch(_) {}
+      render();
+    } else {
+      const el = document.getElementById('login-err');
+      if (el) el.textContent = 'PIN incorrecto';
+    }
+  }
+
+  if (f.dataset.form === 'venta'){
+    const cantidad = parseFloat(d.monto);
+    if (!(cantidad > 0)) { alert('Ingrese un monto válido'); return; }
+    db.ventas.unshift({
+      id:uid(), biz:f.dataset.biz, tipo:d.tipo, desc:(d.desc || '').trim(),
+      monto:cantidad, pago:d.pago, fecha:new Date().toISOString()
+    });
+    guardar(); render();
+  }
+
+  if (f.dataset.form === 'pedido'){
+    db.pedidos.unshift({
+      id:uid(), tipo:d.tipo, nombre:d.nombre.trim(), tel:d.tel.trim(),
+      detalle:d.detalle.trim(), estado:'Nuevo', fecha:new Date().toISOString()
+    });
+    guardar(); render();
+  }
+
+  if (f.dataset.form === 'equipo'){
+    if (!d.nombre.trim()) { alert('Ingrese el nombre'); return; }
+    db.equipo.push({ id:uid(), nombre:d.nombre.trim(), rol:d.rol, activo:true });
+    guardar(); render();
+  }
+
+  if (f.dataset.form === 'producto'){
+    const precio = parseFloat(d.precio);
+    const stock = parseInt(d.stock, 10);
+    const minimo = parseInt(d.minimo, 10);
+    if (!d.nombre.trim() || !(precio >= 0) || isNaN(stock) || stock < 0 || isNaN(minimo) || minimo < 0){
+      alert('Complete nombre, precio, existencias y mínimo'); return;
+    }
+    db.productos.push({ id:uid(), nombre:d.nombre.trim(), precio, stock, minimo });
+    guardar(); render();
+  }
+});
+
+window.addEventListener('hashchange', render);
+setInterval(updateCountdown, 30000);
+render();
+</script>
+</body>
+</html>
