@@ -3,232 +3,234 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>La Bodeguita | BN Servicios, Tiempos JPS y Abarrotes</title>
+<title>La Bodeguita · Panel Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=IBM+Plex+Mono:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  /* COLORES DEL BN (aproximados: reemplazar con los oficiales del manual de marca) */
-  --bn-primary:#00843d;
-  --bn-dark:#0b3d24;
-  --bn-accent:#ffc72c;
-
-  /* COLORES POR NEGOCIO */
-  --bn-color:#00843d;
-  --lot-color:#f4a300;
-  --abr-color:#d7263d;
-
-  /* FOTO DE FONDO DE LA PORTADA: pegar aquí una URL propia, por ejemplo url("https://...jpg") */
-  --hero-img:linear-gradient(120deg,#0b3d24 0%,#00843d 55%,#0f9d4f 100%);
-
-  /* BASE */
-  --ink:#1d2433;--muted:#64708a;--bg:#f7f8f4;--card:#ffffff;--line:#e4e7df;--danger:#b23a3a;
-  --grad:linear-gradient(135deg,var(--abr-color) 0%,var(--bn-dark) 100%);
+  --char-950:#171310;--char-900:#221b16;--char-700:#3a2c22;
+  --flame-600:#d9391f;--flame-500:#e8792b;--ember-400:#f2a53a;--gold-200:#f6d98a;
+  --paper:#fbf4ea;--paper-dim:#f3e6d5;
+  --ink-900:#241c15;--ink-600:#6b5945;--ink-400:#8f7c68;
+  --amber-500:#e8792b;--red-500:#c92f1c;--status-green:#3f9868;
+  --glass-bg:rgba(255,250,242,.65);--glass-border:rgba(255,255,255,.8);--glass-strong:rgba(255,250,242,.85);
+  --font-display:'Bricolage Grotesque','Sora',system-ui,sans-serif;
+  --font-body:'IBM Plex Sans',system-ui,sans-serif;
+  --font-mono:'IBM Plex Mono','SFMono-Regular',monospace;
+  --radius-lg:22px;--radius-md:14px;--radius-sm:9px;
+  color-scheme:light;
 }
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Georgia,'Times New Roman',serif;background:var(--bg);color:var(--ink);line-height:1.5;min-height:100vh;display:flex;flex-direction:column}
-h1,h2,h3{font-weight:600;letter-spacing:.2px}
-a{color:var(--bn-primary)}
-.wrap{max-width:1100px;margin:0 auto;padding:0 16px;width:100%}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:var(--font-body);color:var(--ink-900);background:var(--paper);-webkit-font-smoothing:antialiased;font-size:16px;font-weight:600;line-height:1.6}
+h1,h2,h3,h4{font-family:var(--font-display);margin:0;letter-spacing:-.01em;font-weight:700}
+h1{font-size:32px}h2{font-size:28px}h3{font-size:24px}h4{font-size:20px}
+p{margin:0;font-size:16px;font-weight:600}
+button{font-family:var(--font-body);cursor:pointer;font-weight:700;font-size:16px}
+input,textarea,select{font-family:var(--font-body);font-size:16px;font-weight:600}
+a{color:inherit;font-weight:600}
+::selection{background:var(--ember-400);color:var(--char-950)}
+:focus-visible{outline:2px solid var(--flame-600);outline-offset:2px;border-radius:6px}
+.mono{font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-weight:700;font-size:16px}
+#app{min-height:100vh}
 
-/* ---------- ENCABEZADO ---------- */
-header.top{background:rgba(255,255,255,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 2px 14px rgba(0,0,0,.08);position:sticky;top:0;z-index:50}
-header.top .wrap{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px 12px;padding-top:10px;padding-bottom:10px}
-.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;white-space:nowrap}
-.logo-box{width:44px;height:44px;border-radius:12px;background:var(--grad);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;letter-spacing:.5px;box-shadow:0 4px 12px rgba(0,0,0,.18)}
-.brand-txt b{display:block;font-size:17px;color:var(--ink)}
-.brand-txt small{display:block;font-size:10px;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted)}
-nav{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
-nav a{color:var(--ink);text-decoration:none;font-family:system-ui,sans-serif;font-size:14px;font-weight:600;padding:9px 14px;border-radius:999px}
-nav a:hover{background:#f0f2ec}
-nav a.on{background:var(--grad);color:#fff}
-nav a.llamar{background:linear-gradient(135deg,#c8102e,#1b3358);color:#fff;margin-left:6px}
+/* ---------- SHELL ---------- */
+.app-shell{position:relative;display:flex;min-height:100vh;overflow:hidden;background:var(--paper)}
+.canopy{position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0}
+.canopy--one{width:720px;height:720px;top:-260px;right:-220px;background:radial-gradient(circle at 30% 30%,var(--ember-400) 0%,var(--flame-600) 55%,transparent 75%);opacity:.5}
+.canopy--two{width:520px;height:520px;bottom:-240px;left:220px;background:radial-gradient(circle at 60% 60%,var(--gold-200) 0%,transparent 70%);opacity:.55}
 
-/* ---------- PORTADA ---------- */
-.hero{position:relative;color:#fff;text-align:center;padding:90px 0 110px;background:linear-gradient(180deg,rgba(11,61,36,.55) 0%,rgba(11,61,36,.88) 100%),var(--hero-img);background-size:cover;background-position:center;overflow:hidden}
-.hero-inner{position:relative;max-width:900px;margin:0 auto;padding:0 16px}
-.pill-glass{display:inline-block;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);font-family:system-ui,sans-serif;font-size:14px;padding:8px 18px;border-radius:999px}
-.hero h1{font-size:60px;line-height:1.1;margin:26px 0 18px;text-shadow:0 2px 18px rgba(0,0,0,.25)}
-.grad-text{background:linear-gradient(90deg,#ff4d5a,#ffc72c);-webkit-background-clip:text;background-clip:text;color:transparent}
-.hero > .hero-inner > p{color:#e6f4ec;max-width:640px;margin:0 auto;font-size:19px;font-family:system-ui,sans-serif}
-.search-hero{max-width:680px;margin:34px auto 0;background:#fff;border-radius:999px;display:flex;align-items:center;padding:6px 6px 6px 20px;box-shadow:0 10px 30px rgba(0,0,0,.25);font-family:system-ui,sans-serif}
-.search-hero span{color:#8a93a6;font-size:18px}
-.search-hero input{flex:1;border:none;outline:none;font-size:16px;padding:12px 10px;background:transparent;color:var(--ink);font-family:inherit;min-width:0}
-.search-hero button{background:var(--abr-color);color:#fff;border:none;border-radius:999px;padding:12px 24px;font-weight:700;font-size:15px;cursor:pointer}
-.cta{margin-top:20px;display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
-.btn-grad,.btn-glass{display:inline-block;padding:13px 24px;border-radius:999px;text-decoration:none;font-family:system-ui,sans-serif;font-weight:700;font-size:15px}
-.btn-grad{background:var(--grad);color:#fff;box-shadow:0 8px 22px rgba(215,38,61,.35)}
-.btn-glass{background:#fff;color:var(--ink)}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:760px;margin:56px auto 0;font-family:system-ui,sans-serif}
-.stat{background:rgba(255,255,255,.92);border-radius:16px;padding:22px 12px;box-shadow:0 8px 24px rgba(0,0,0,.18)}
-.stat strong{display:block;font-size:34px;color:var(--sc);font-family:Georgia,serif;line-height:1.1}
-.stat span{display:block;margin-top:8px;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
-.scroll-hint{position:absolute;left:0;right:0;bottom:16px;text-align:center;font-family:system-ui,sans-serif;font-size:13px;color:rgba(255,255,255,.85)}
+/* Sidebar */
+.sidebar{position:relative;z-index:2;width:232px;flex-shrink:0;background:var(--char-950);color:var(--gold-200);display:flex;flex-direction:column;padding:24px 16px;gap:28px}
+.sidebar__brand{display:flex;align-items:center;gap:10px;padding:0 8px}
+.sidebar__mark{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--flame-600),var(--ember-400));color:var(--paper);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:13px;flex-shrink:0}
+.sidebar__mark--lg{width:56px;height:56px;font-size:20px;margin:0 auto}
+.sidebar__title{font-family:var(--font-display);color:var(--paper);font-weight:700;font-size:15px;margin:0}
+.sidebar__subtitle{font-size:12px;color:var(--ember-400);margin:0}
+.sidebar__nav{display:flex;flex-direction:column;gap:4px}
+.sidebar__link{display:flex;align-items:center;gap:12px;background:transparent;border:none;color:var(--gold-200);font-size:14px;font-weight:500;padding:10px 12px;border-radius:var(--radius-sm);text-align:left;text-decoration:none;transition:background .15s ease,color .15s ease}
+.sidebar__link:hover{background:rgba(255,255,255,.06);color:var(--paper)}
+.sidebar__link.is-active{background:var(--flame-600);color:var(--paper)}
+.sidebar__icon{width:18px;text-align:center;font-size:15px}
+.sidebar__footer{margin-top:auto;padding:12px;border-top:1px solid rgba(255,255,255,.1);font-size:11px;color:var(--ember-400)}
+.sidebar__footer .btn-secondary{color:var(--gold-200);border-color:var(--char-700)}
+.sidebar__project{color:var(--gold-200);font-size:12px}
 
-/* ---------- SECCIONES ---------- */
-main{flex:1}
-.pad{padding:64px 0}
-.pad-s{padding:40px 0}
-.sec-title{text-align:center;font-size:30px;color:var(--bn-dark);margin-bottom:8px}
-.sec-sub{text-align:center;color:var(--muted);margin-bottom:34px;font-family:system-ui,sans-serif}
-.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:22px}
+.app-main{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;min-width:0}
+.topbar{display:flex;align-items:flex-start;justify-content:space-between;padding:28px 36px 12px;gap:16px;flex-wrap:wrap}
+.topbar__title{font-size:24px;font-weight:700;color:var(--char-950)}
+.topbar__subtitle{margin-top:4px;font-size:13px;color:var(--ink-600)}
+.topbar__right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.topbar__status{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:500;padding:8px 14px;border-radius:999px;background:var(--glass-bg);border:1px solid var(--glass-border);backdrop-filter:blur(14px);color:var(--ink-600)}
+.topbar__dot{width:8px;height:8px;border-radius:50%;background:var(--status-green)}
+.topbar__logout{background:rgba(201,47,28,.08);border:1px solid rgba(201,47,28,.25);border-radius:999px;padding:8px 14px;font-size:12px;font-weight:600;color:var(--red-500);white-space:nowrap}
+.low-stock{margin:0 36px 4px;background:rgba(201,47,28,.1);color:var(--red-500);padding:10px 14px;border-radius:var(--radius-sm);font-size:13px;font-weight:700}
+.app-content{padding:12px 36px 48px;display:flex;flex-direction:column;gap:28px}
 
-/* ---------- TARJETAS ---------- */
-.quick{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:18px}
-.qcard{background:var(--card);border:1px solid var(--line);border-top:5px solid var(--c);border-radius:12px;padding:24px 20px;text-decoration:none;color:var(--ink);box-shadow:0 4px 16px rgba(11,61,36,.07);transition:transform .15s}
-.qcard:hover{transform:translateY(-3px)}
-.qcard .icono{width:46px;height:46px;border-radius:12px;background:var(--c);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:12px}
-.qcard h3{color:var(--bn-dark);font-size:18px}
-.card{background:var(--card);border:1px solid var(--line);border-top:4px solid var(--c,var(--bn-dark));border-radius:12px;padding:22px 20px;box-shadow:0 4px 14px rgba(11,61,36,.06)}
-.card h3{color:var(--bn-dark);font-size:19px;margin:8px 0}
-.card p{color:var(--muted);font-family:system-ui,sans-serif;font-size:15px;margin-top:8px}
-.card small{color:var(--muted);font-family:system-ui,sans-serif;font-size:13px}
-.tag{display:inline-block;padding:2px 10px;border-radius:10px;font-size:11px;font-family:system-ui,sans-serif;color:#fff;letter-spacing:.3px}
-.empty{color:var(--muted);padding:16px 0;text-align:center;font-family:system-ui,sans-serif}
+/* ---------- MÉTRICAS Y BLOQUES ---------- */
+.metrics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+.metric-card{background:var(--glass-bg);border:1px solid var(--glass-border);backdrop-filter:blur(18px);border-radius:var(--radius-lg);padding:20px 22px}
+.metric-card__label{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-400);margin-bottom:10px}
+.metric-card__value{font-size:32px;font-weight:600;color:var(--char-950)}
+.metric-card__hint{margin-top:6px;font-size:12px;color:var(--ink-400)}
+.metric-card--mint{border-color:rgba(116,198,157,.6)}
+.metric-card--amber .metric-card__value{color:#a86a1c}
+.section-block{display:flex;flex-direction:column;gap:14px}
+.section-block__title{font-size:16px;font-weight:600;color:var(--char-950)}
+.panel{background:var(--glass-strong);border:1px solid var(--glass-border);border-radius:var(--radius-lg);overflow:hidden}
+.panel--empty{padding:40px 28px;text-align:center;color:var(--ink-600);font-size:14px;display:flex;flex-direction:column;gap:6px}
+.panel__hint{color:var(--ink-400);font-size:12px}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;align-items:end;padding:20px}
+.form-grid .full{grid-column:1/-1}
+.form-actions{display:flex;justify-content:flex-end}
+.field{display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:600;color:var(--ink-600)}
+.field input,.field select,.field textarea{border:1px solid rgba(16,36,27,.16);background:rgba(255,255,255,.7);border-radius:var(--radius-sm);padding:9px 12px;font-size:14px;color:var(--ink-900);font-weight:500}
+.field textarea{resize:vertical}
 
-/* ---------- NOTICIAS / FILTROS ---------- */
-.filtros{display:flex;flex-direction:column;gap:14px;margin-bottom:28px;font-family:system-ui,sans-serif}
-.filtros input{max-width:520px;margin:0 auto;width:100%}
-.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
-.chip{border:1px solid var(--line);background:#fff;padding:7px 14px;border-radius:20px;cursor:pointer;font-size:14px;color:var(--ink)}
-.chip.on{background:var(--bn-dark);color:#fff;border-color:var(--bn-dark)}
+/* ---------- TABLAS ---------- */
+.table-wrap{overflow-x:auto}
+.orders-table{width:100%;border-collapse:collapse;font-size:13px}
+.orders-table th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-400);padding:14px 12px;border-bottom:1px solid rgba(16,36,27,.08)}
+.orders-table td{padding:14px 12px;border-bottom:1px solid rgba(16,36,27,.06);color:var(--ink-900);vertical-align:top}
+.orders-table tr:last-child td{border-bottom:none}
+.order-sub{font-size:11px;color:var(--ink-400);margin-top:2px;display:inline-block}
+.order-items{font-size:12px;color:var(--ink-600)}
+.order-actions{display:flex;flex-wrap:wrap;gap:6px}
+.action-btn{font-size:11px;font-weight:600;padding:6px 10px;border-radius:var(--radius-sm);border:1px solid transparent;cursor:pointer;white-space:nowrap;background:var(--paper-dim);color:var(--ink-900)}
+.action-btn:disabled{opacity:.5;cursor:not-allowed}
+.action-btn--blue{background:rgba(63,122,200,.14);color:#2f5aa8}
+.action-btn--green{background:rgba(63,152,104,.16);color:var(--status-green)}
+.action-btn--amber{background:rgba(232,163,61,.16);color:#a86a1c}
+.action-btn--red{background:rgba(201,47,28,.12);color:var(--red-500)}
+.stock-ctrl{display:inline-flex;align-items:center;gap:8px}
+.stock-ctrl .action-btn{width:24px;height:24px;padding:0;display:inline-flex;align-items:center;justify-content:center;font-size:14px}
+.is-low{color:var(--red-500)!important}
 
-/* ---------- EVENTOS ---------- */
-.evento{display:flex;gap:16px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:16px;font-family:system-ui,sans-serif}
-.fecha-box{min-width:70px;text-align:center;background:var(--lot-color);color:var(--bn-dark);border-radius:8px;padding:8px 6px;height:fit-content}
-.fecha-box b{display:block;font-size:26px;line-height:1}
-.fecha-box span{font-size:12px;font-weight:700;letter-spacing:.5px}
-.evento h3{color:var(--bn-dark);font-size:18px;margin-bottom:4px}
-.evento small{color:var(--muted)}
-.evento p{color:var(--ink);margin-top:6px;font-size:15px}
+/* Mobile: las tablas se vuelven tarjetas */
+@media (max-width:640px){
+  .orders-table thead{display:none}
+  .orders-table,.orders-table tbody,.orders-table tr,.orders-table td{display:block;width:100%}
+  .orders-table tr{padding:14px 16px;border-bottom:1px solid rgba(16,36,27,.1)}
+  .orders-table td{padding:3px 0;border-bottom:none}
+  .orders-table td::before{content:attr(data-label);display:block;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-400);margin-bottom:2px}
+}
 
-/* ---------- FORMULARIOS ---------- */
-.form-pub{background:#fff;border:1px solid var(--line);border-top:5px solid var(--bn-accent);border-radius:12px;padding:26px;max-width:640px;margin:0 auto;font-family:system-ui,sans-serif;display:grid;gap:14px}
-.flash{max-width:640px;margin:0 auto 20px;background:#e8f6ee;border:1px solid var(--bn-primary);color:var(--bn-dark);padding:14px 18px;border-radius:10px;font-family:system-ui,sans-serif}
-label{font-size:12px;color:var(--muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px;font-family:system-ui,sans-serif}
-input,select,textarea{width:100%;padding:11px;border:1px solid var(--line);border-radius:8px;font-size:15px;background:#fff;font-family:inherit}
-textarea{resize:vertical}
-.btn{background:var(--bn-primary);color:#fff;border:none;padding:11px 16px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600;font-family:system-ui,sans-serif}
-.btn:hover{filter:brightness(1.1)}
-.btn.gold{background:var(--bn-accent);color:var(--bn-dark)}
-.btn.del{background:var(--danger)}
-.btn.small{padding:6px 10px;font-size:12px}
-.btn.wa{background:#25d366}
+/* ---------- BADGES Y BOTONES ---------- */
+.badge{display:inline-block;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:600}
+.badge--amber{background:rgba(232,163,61,.18);color:#a86a1c}
+.badge--blue{background:rgba(63,122,200,.16);color:#2f5aa8}
+.badge--green{background:rgba(63,152,104,.18);color:var(--status-green)}
+.badge--gray{background:rgba(111,138,124,.16);color:var(--ink-600)}
+.badge--red{background:rgba(209,83,63,.16);color:var(--red-500)}
+.badge--purple{background:rgba(124,58,179,.14);color:#7c3ab3}
+.btn-primary{background:var(--flame-600);color:var(--paper);border:none;padding:11px 20px;border-radius:var(--radius-sm);font-size:13px;font-weight:600}
+.btn-primary:disabled{opacity:.5}
+.btn-secondary{background:transparent;color:var(--ink-900);border:1px solid var(--char-700);padding:11px 20px;border-radius:var(--radius-sm);font-size:13px;font-weight:600}
 
-/* ---------- CONTACTO ---------- */
-.contacto-box{text-align:center;font-family:system-ui,sans-serif;background:#fff;border:1px solid var(--line);border-radius:12px;padding:30px;max-width:640px;margin:0 auto}
-.contacto-box p{margin:10px 0;font-size:16px}
+/* ---------- SORTEOS ---------- */
+.sorteos-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.sorteo-card{background:rgba(255,255,255,.5);border:1px solid var(--glass-border);border-radius:var(--radius-md);padding:18px}
+.sorteo-card h3{font-size:20px;margin-bottom:10px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip-hora{font-family:var(--font-mono);font-size:13px;font-weight:700;padding:6px 12px;border-radius:999px;background:var(--paper-dim);color:var(--ink-900)}
+.chip-hora.is-next{background:var(--flame-600);color:var(--paper)}
 
-/* ---------- ADMIN ---------- */
-.adm-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:18px;font-family:system-ui,sans-serif}
-.adm-head h2{color:var(--bn-dark);font-size:24px}
-.adm-tabs{display:flex;gap:8px;overflow-x:auto;margin-bottom:22px;font-family:system-ui,sans-serif}
-.adm-tabs button{border:2px solid var(--line);background:#fff;padding:9px 14px;border-radius:20px;cursor:pointer;white-space:nowrap;font-size:14px}
-.adm-tabs button.on{background:var(--bn-dark);border-color:var(--bn-dark);color:#fff}
-.panel{background:#fff;border:1px solid var(--line);border-radius:10px;padding:20px;margin-bottom:22px;font-family:system-ui,sans-serif}
-.panel h3{color:var(--bn-dark);margin-bottom:14px;font-size:18px}
-.grid-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;align-items:end}
-.scroll{overflow-x:auto}
-table{width:100%;border-collapse:collapse;font-size:14px;font-family:system-ui,sans-serif}
-th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}
-th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.5px}
-
-/* ---------- PIE Y BOTÓN FLOTANTE ---------- */
-footer{background:var(--bn-dark);color:#cfe9d9;padding:34px 0;text-align:center;font-family:system-ui,sans-serif;font-size:14px}
-footer b{color:var(--bn-accent)}
-footer a{color:#9fd3b3}
-.aviso-jps{margin-top:10px;font-size:13px;color:#a9c9b6;font-style:italic}
-.float-chat{position:fixed;right:20px;bottom:20px;width:56px;height:56px;border-radius:50%;background:var(--grad);color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;text-decoration:none;box-shadow:0 8px 22px rgba(0,0,0,.3);z-index:60}
+/* ---------- LOGIN ---------- */
+.login-screen{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--char-950);padding:20px;overflow:hidden}
+.login-card{position:relative;z-index:1;background:var(--paper);border-radius:var(--radius-lg);padding:32px 28px;width:min(380px,100%);display:flex;flex-direction:column;gap:14px;box-shadow:0 20px 50px rgba(0,0,0,.4);text-align:center}
+.login-card h2{font-size:26px;color:var(--char-950)}
+.login-card .field{text-align:left}
+.login-card .field input{font-size:18px;letter-spacing:.3em;text-align:center}
+.login-error{color:var(--red-500);font-size:13px;min-height:18px}
 
 /* ---------- RESPONSIVE ---------- */
-@media (max-width:700px){
-  .hero{padding:60px 0 90px}
-  .hero h1{font-size:42px}
-  .hero > .hero-inner > p{font-size:16px}
-  .stats{grid-template-columns:1fr}
-  nav a{font-size:13px;padding:7px 10px}
-  .brand-txt b{font-size:15px}
+@media (max-width:860px){
+  .app-shell{flex-direction:column}
+  .sidebar{width:100%;flex-direction:row;align-items:center;padding:12px 16px;gap:14px;overflow-x:auto}
+  .sidebar__nav{flex-direction:row}
+  .sidebar__link{white-space:nowrap}
+  .sidebar__footer{display:none}
+  .topbar,.app-content{padding-left:18px;padding-right:18px}
+  .low-stock{margin:0 18px 4px}
 }
-.hidden{display:none!important}
 </style>
 </head>
 <body>
-
-<header class="top">
-  <div class="wrap">
-    <a class="brand" href="#inicio">
-      <div class="logo-box">BN</div>
-      <div class="brand-txt">
-        <b>La Bodeguita</b>
-        <small>Agente autorizado BN</small>
-      </div>
-    </a>
-    <nav>
-      <a href="#inicio" data-r="inicio">Inicio</a>
-      <a href="#noticias" data-r="noticias">Noticias</a>
-      <a href="#eventos" data-r="eventos">Tiempos</a>
-      <a href="#pedidos" data-r="pedidos">Pedidos</a>
-      <a href="#contacto" data-r="contacto">Contacto</a>
-      <a class="llamar" href="tel:+506XXXXXXXX">📞 Llamar</a>
-    </nav>
-  </div>
-</header>
-
-<main>
-  <div id="app" class="wrap"></div>
-</main>
-
-<footer>
-  <div class="wrap">
-    <p><b>La Bodeguita</b> · Agente autorizado Banco Nacional de Costa Rica · © 2026</p>
-    <p class="aviso-jps">Tiempos es un juego oficial de la Junta de Protección Social (JPS). Juegue con responsabilidad.</p>
-    <p style="margin-top:10px"><a href="#admin">Acceso administración</a></p>
-  </div>
-</footer>
-
-<a class="float-chat" href="https://wa.me/506XXXXXXXX" target="_blank" rel="noopener" aria-label="Escribir por WhatsApp">💬</a>
+<div id="app"></div>
 
 <script>
 /* ============ CONFIGURACIÓN ============ */
-const ADMIN_PIN = '1234';                 // Cambiar por un PIN propio
-const WA_NUMBER = '506XXXXXXXX';          // Número de WhatsApp con código de país (506...)
-const KEY = 'bodeguita-web-v1';
+const ADMIN_PIN = '1234';              // Cambiar por un PIN propio
+const KEY = 'bodeguita-panel-v1';
+const SESS = 'bodeguita-adm';
+const TZ = 'America/Costa_Rica';
 
-const CATS = ['Tiempos JPS','BN Servicios','Abarrotes','General'];
-const TIPOS_PEDIDO = ['Abarrotes a domicilio','Servicio BN','Consulta de Tiempos'];
+const PAGOS = ['Efectivo','SINPE Móvil','Tarjeta'];
 const ESTADOS = ['Nuevo','En proceso','Listo','Entregado'];
-const CAT_COLOR = {
-  'Tiempos JPS':'var(--lot-color)',
-  'BN Servicios':'var(--bn-color)',
-  'Abarrotes':'var(--abr-color)',
-  'General':'var(--bn-dark)'
+const ESTADO_BADGE = { 'Nuevo':'blue', 'En proceso':'amber', 'Listo':'green', 'Entregado':'gray' };
+const TIPOS_PEDIDO = ['Abarrotes a domicilio','Servicio BN','Consulta de Tiempos, Lotería o Chances','Otro'];
+
+const NEGOCIOS = {
+  bn:        { nombre:'BN Servicios',  badge:'green',  tipos:['Pago de servicio','Recarga','Trámite','Otro'] },
+  tiempos:   { nombre:'Tiempos (JPS)', badge:'amber',  tipos:['Venta NICA','Venta RICA','Pago de premio'] },
+  loteria:   { nombre:'Lotería (JPS)', badge:'blue',   tipos:['Venta','Pago de premio'] },
+  chances:   { nombre:'Chances (JPS)', badge:'purple', tipos:['Venta','Pago de premio'] },
+  abarrotes: { nombre:'Abarrotes',     badge:'gray',   tipos:['Venta mostrador','Venta a domicilio','Otro'] }
 };
 
-/* ============ DATOS DE EJEMPLO (reemplazar) ============ */
+/* Horarios de Tiempos (hora de Costa Rica) */
+const SORTEOS = {
+  NICA: [[11,0],[15,0],[18,0],[21,0]],
+  RICA: [[12,45],[16,30],[21,0]]
+};
+
+const NAV = [
+  ['resumen',   'Resumen',        '◧'],
+  ['pedidos',   'Pedidos',        '☰'],
+  ['bn',        'BN Servicios',   '🏦'],
+  ['tiempos',   'Tiempos JPS',    '🎯'],
+  ['loteria',   'Lotería JPS',    '🎟️'],
+  ['chances',   'Chances JPS',    '🎫'],
+  ['caja',      'Cierre de caja', '💵'],
+  ['inventario','Abarrotes',      '📦']
+];
+
+const TITLES = {
+  resumen:    ['Resumen', 'Lo que está pasando ahora mismo en La Bodeguita'],
+  pedidos:    ['Pedidos', 'Solicitudes de abarrotes y servicios'],
+  bn:         ['BN Servicios', 'Trámites y pagos como agente autorizado del Banco Nacional'],
+  tiempos:    ['Tiempos JPS', 'Juego oficial de la Junta de Protección Social'],
+  loteria:    ['Lotería JPS', 'Ventas y premios de Lotería'],
+  chances:    ['Chances JPS', 'Ventas y premios de Chances'],
+  caja:       ['Cierre de caja', 'Movimientos y totales por negocio'],
+  inventario: ['Abarrotes', 'Existencias, precios y ventas de mostrador']
+};
+
+/* Datos de ejemplo: borrar o cambiar desde el panel */
 const SEED = {
-  noticias: [
-    { id:'n1', cat:'Abarrotes',    titulo:'Ejemplo: nuevos productos en La Bodeguita', fecha:'2026-10-10', resumen:'Texto de ejemplo. Reemplazar con la noticia real.' },
-    { id:'n2', cat:'BN Servicios', titulo:'Ejemplo: horario de servicios BN',          fecha:'2026-10-05', resumen:'Texto de ejemplo. Reemplazar con la información real.' },
-    { id:'n3', cat:'Tiempos JPS',  titulo:'Ejemplo: aviso sobre Tiempos',              fecha:'2026-10-01', resumen:'Texto de ejemplo. Reemplazar con el aviso oficial.' }
-  ],
-  eventos: [
-    { id:'e1', titulo:'Ejemplo: sorteo de Tiempos', fecha:'2026-11-01', lugar:'La Bodeguita', desc:'Reemplazar con la información real del sorteo.' }
-  ],
-  pedidos: []
+  ventas: [],
+  pedidos: [],
+  productos: [
+    { id:'p1', nombre:'Arroz 1 kg (ejemplo)',       precio:1200, stock:20, minimo:5 },
+    { id:'p2', nombre:'Aceite 1 L (ejemplo)',       precio:2100, stock:3,  minimo:5 },
+    { id:'p3', nombre:'Jabón de platos (ejemplo)',  precio:1500, stock:10, minimo:4 }
+  ]
 };
 
 /* ============ ESTADO ============ */
 let db = load();
-let noticiasFiltro = { q:'', cat:'Todas' };
-let adminTab = 'noticias';
-let flash = '';
+let logged = false;
+try { logged = sessionStorage.getItem(SESS) === 'ok'; } catch(e) {}
 
 function load(){
   try {
     const d = JSON.parse(localStorage.getItem(KEY));
-    if (d && Array.isArray(d.noticias)) return d;
+    if (d && Array.isArray(d.ventas) && Array.isArray(d.pedidos) && Array.isArray(d.productos)) return d;
   } catch(e) {}
   return JSON.parse(JSON.stringify(SEED));
 }
-function save(){
+function guardar(){
   try { localStorage.setItem(KEY, JSON.stringify(db)); }
   catch(e){ alert('No se pudo guardar en este navegador'); }
 }
@@ -236,352 +238,139 @@ function save(){
 /* ============ UTILIDADES ============ */
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7);
-const fechaES = f => f ? new Date(f + 'T00:00:00').toLocaleDateString('es-CR',{day:'numeric',month:'long',year:'numeric'}) : '';
-const fechaHora = iso => new Date(iso).toLocaleString('es-CR',{dateStyle:'short',timeStyle:'short'});
-const hoyISO = () => new Date().toISOString().slice(0,10);
+const fmt = n => new Intl.NumberFormat('es-CR',{style:'currency',currency:'CRC',maximumFractionDigits:0}).format(Number(n)||0);
+const fechaCR = iso => new Date(iso).toLocaleDateString('en-CA',{timeZone:TZ});
+const hoyCR = () => new Date().toLocaleDateString('en-CA',{timeZone:TZ});
+const fechaHora = iso => new Date(iso).toLocaleString('es-CR',{timeZone:TZ,dateStyle:'short',timeStyle:'short'});
 
-/* ============ PÁGINAS ============ */
-function cardNoticia(n){
-  const c = CAT_COLOR[n.cat] || 'var(--bn-dark)';
-  return `
-    <article class="card" style="--c:${c}">
-      <span class="tag" style="background:${c}">${esc(n.cat)}</span>
-      <h3>${esc(n.titulo)}</h3>
-      <small>${fechaES(n.fecha)}</small>
-      <p>${esc(n.resumen)}</p>
-    </article>`;
+/* Positivo = venta; "premio" resta (pago de premio) */
+const monto = v => /premio/i.test(v.tipo) ? -Number(v.monto) : Number(v.monto);
+const neto = lista => lista.reduce((s,v) => s + monto(v), 0);
+const movsDeHoy = () => db.ventas.filter(v => fechaCR(v.fecha) === hoyCR());
+const sumaPago = (lista, pago) => neto(lista.filter(v => v.pago === pago));
+
+/* ============ SORTEOS ============ */
+function minutosCR(){
+  const p = new Intl.DateTimeFormat('en-GB',{timeZone:TZ,hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date());
+  return (+p.find(x => x.type === 'hour').value) * 60 + (+p.find(x => x.type === 'minute').value);
 }
-
-function pInicio(){
-  const quick = [
-    { t:'BN Servicios', i:'🏦', c:'var(--bn-color)',  r:'pedidos'  },
-    { t:'Tiempos JPS',  i:'🎯', c:'var(--lot-color)', r:'eventos'  },
-    { t:'Abarrotes',    i:'🛒', c:'var(--abr-color)', r:'pedidos'  },
-    { t:'Noticias',     i:'📰', c:'var(--bn-primary)',r:'noticias' },
-    { t:'Contacto',     i:'📞', c:'var(--bn-dark)',   r:'contacto' }
-  ];
-  return `
-    <section class="hero">
-      <div class="hero-inner">
-        <span class="pill-glass">✨ Agente autorizado Banco Nacional de Costa Rica</span>
-        <h1>Bienvenidos a<br><span class="grad-text">La Bodeguita</span></h1>
-        <p>Trámites bancarios, Tiempos (juego oficial de la JPS) y productos básicos para su hogar, todo en un mismo lugar.</p>
-        <form id="form-busqueda" class="search-hero">
-          <span>🔍</span>
-          <input name="q" placeholder="Buscar noticias, avisos, sorteos…">
-          <button type="submit">Buscar</button>
-        </form>
-        <div class="cta">
-          <a class="btn-grad" href="#pedidos">Ver servicios →</a>
-          <a class="btn-glass" href="#contacto">📍 Visítenos</a>
-        </div>
-        <div class="stats">
-          <div class="stat" style="--sc:var(--bn-primary)"><strong>BN</strong><span>Agente autorizado</span></div>
-          <div class="stat" style="--sc:var(--lot-color)"><strong>JPS</strong><span>Juego oficial Tiempos</span></div>
-          <div class="stat" style="--sc:var(--abr-color)"><strong>3</strong><span>Negocios en un solo lugar</span></div>
-        </div>
-      </div>
-      <span class="scroll-hint">Desplácese para explorar ↓</span>
-    </section>
-
-    <section class="pad">
-      <h2 class="sec-title">Acceso rápido</h2>
-      <p class="sec-sub">Lo que necesitás, en unos segundos</p>
-      <div class="quick">
-        ${quick.map(q => `
-          <a class="qcard" href="#${q.r}" style="--c:${q.c}">
-            <div class="icono">${q.i}</div>
-            <h3>${esc(q.t)}</h3>
-          </a>`).join('')}
-      </div>
-    </section>
-
-    <section class="pad-s">
-      <h2 class="sec-title">Últimos avisos</h2>
-      <p class="sec-sub">Novedades de la bodeguita</p>
-      <div class="grid3">${db.noticias.slice(0,3).map(cardNoticia).join('')}</div>
-      <p style="text-align:center;margin-top:22px"><a href="#noticias">Ver todas las noticias →</a></p>
-    </section>`;
-}
-
-function pNoticias(){
-  return `
-    <section class="pad-s">
-      <h2 class="sec-title">Noticias y avisos</h2>
-      <p class="sec-sub">Anuncios y novedades</p>
-      <div class="filtros">
-        <input id="buscar" placeholder="Buscar noticias…" value="${esc(noticiasFiltro.q)}">
-        <div class="chips">
-          ${['Todas', ...CATS].map(c => `
-            <button class="chip ${noticiasFiltro.cat === c ? 'on' : ''}" data-act="chip" data-cat="${esc(c)}">${esc(c)}</button>`).join('')}
-        </div>
-      </div>
-      <div class="grid3" id="lista-noticias"></div>
-    </section>`;
-}
-
-function filtrarNoticias(){
-  const el = document.getElementById('lista-noticias');
-  if (!el) return;
-  const q = noticiasFiltro.q.toLowerCase();
-  const lista = db.noticias.filter(n =>
-    (noticiasFiltro.cat === 'Todas' || n.cat === noticiasFiltro.cat) &&
-    (n.titulo + ' ' + n.resumen).toLowerCase().includes(q)
+function proximoSorteo(){
+  const now = minutosCR();
+  const todos = [];
+  Object.entries(SORTEOS).forEach(([nombre, horas]) =>
+    horas.forEach(([h,m]) => todos.push({ nombre, h, m, min:h*60+m }))
   );
-  el.innerHTML = lista.length ? lista.map(cardNoticia).join('') : '<p class="empty">No hay noticias con ese filtro</p>';
+  todos.sort((a,b) => a.min - b.min);
+  const next = todos.find(t => t.min > now);
+  if (next) return { ...next, en: next.min - now, manana: false };
+  return { ...todos[0], en: 1440 - now + todos[0].min, manana: true };
+}
+function fmtHora(h,m){ return `${h % 12 || 12}:${String(m).padStart(2,'0')} ${h < 12 ? 'AM' : 'PM'}`; }
+function enTexto(min){
+  const h = Math.floor(min / 60), m = min % 60;
+  return h ? `${h} h ${m} min` : `${m} min`;
+}
+function updateCountdown(){
+  const pr = proximoSorteo();
+  document.querySelectorAll('[data-prox="val"]').forEach(el => el.textContent = `${pr.nombre} · ${fmtHora(pr.h, pr.m)}`);
+  document.querySelectorAll('[data-prox="hint"]').forEach(el => el.textContent = `en ${enTexto(pr.en)}${pr.manana ? ' (mañana)' : ''}`);
+  document.querySelectorAll('.chip-hora').forEach(c =>
+    c.classList.toggle('is-next', c.dataset.sorteo === pr.nombre && +c.dataset.min === pr.min)
+  );
 }
 
-function pEventos(){
-  const lista = [...db.eventos].sort((a,b) => a.fecha.localeCompare(b.fecha));
-  return `
-    <section class="pad-s">
-      <h2 class="sec-title">Tiempos y eventos</h2>
-      <p class="sec-sub">Próximos sorteos y actividades</p>
-      <div style="max-width:720px;margin:0 auto">
-        ${lista.length ? lista.map(ev => {
-          const d = new Date(ev.fecha + 'T00:00:00');
-          const mes = d.toLocaleDateString('es-CR',{month:'short'}).replace('.','').toUpperCase();
-          return `
-          <div class="evento">
-            <div class="fecha-box"><b>${d.getDate()}</b><span>${mes}</span></div>
-            <div>
-              <h3>${esc(ev.titulo)}</h3>
-              <small>📍 ${esc(ev.lugar)} · ${fechaES(ev.fecha)}</small>
-              <p>${esc(ev.desc)}</p>
-            </div>
-          </div>`;
-        }).join('') : '<p class="empty">No hay eventos programados</p>'}
-      </div>
-    </section>`;
+/* ============ PIEZAS DE INTERFAZ ============ */
+const td = (label, html) => `<td data-label="${label}">${html}</td>`;
+const vacio = msg => `<div class="panel panel--empty"><p>${msg}</p></div>`;
+const metric = (label, value, hint = '', tone = 'default') => `
+  <div class="metric-card metric-card--${tone}">
+    <p class="metric-card__label">${label}</p>
+    <p class="metric-card__value mono">${value}</p>
+    ${hint ? `<p class="metric-card__hint">${hint}</p>` : ''}
+  </div>`;
+const field = (label, html, cls = '') => `<label class="field ${cls}">${label}${html}</label>`;
+const tabla = (heads, rows) => `
+  <div class="table-wrap"><table class="orders-table">
+    <thead><tr>${heads.map(h => `<th>${h}</th>`).join('')}</tr></thead>
+    <tbody>${rows}</tbody>
+  </table></div>`;
+
+function tablaMovs(lista, conNegocio){
+  if (!lista.length) return vacio('Sin movimientos todavía');
+  const heads = ['Fecha', ...(conNegocio ? ['Negocio'] : []), 'Tipo', 'Detalle', 'Pago', 'Monto', ''];
+  const rows = lista.map(v => {
+    const b = NEGOCIOS[v.biz] || { nombre: v.biz, badge: 'gray' };
+    return `<tr>
+      ${td('Fecha', fechaHora(v.fecha))}
+      ${conNegocio ? td('Negocio', esc(b.nombre)) : ''}
+      ${td('Tipo', `<span class="badge badge--${b.badge}">${esc(v.tipo)}</span>`)}
+      ${td('Detalle', esc(v.desc) || '—')}
+      ${td('Pago', esc(v.pago))}
+      ${td('Monto', `<span class="mono">${fmt(monto(v))}</span>`)}
+      ${td('', `<button class="action-btn action-btn--red" data-act="del-venta" data-id="${v.id}">Eliminar</button>`)}
+    </tr>`;
+  }).join('');
+  return tabla(heads, rows);
 }
 
-function pPedidos(){
+function panelSorteos(){
   return `
-    <section class="pad-s">
-      <h2 class="sec-title">Pedidos y solicitudes</h2>
-      <p class="sec-sub">Déjenos su solicitud y lo atendemos a la brevedad</p>
-      ${flash ? `<div class="flash">${flash}</div>` : ''}
-      <form id="form-pedido" class="form-pub">
-        <div><label>Tipo de solicitud</label>
-          <select name="tipo">${TIPOS_PEDIDO.map(t => `<option>${esc(t)}</option>`).join('')}</select></div>
-        <div><label>Nombre</label><input name="nombre" required></div>
-        <div><label>Teléfono</label><input name="tel" type="tel" required></div>
-        <div><label>Detalle de la solicitud</label>
-          <textarea name="detalle" rows="4" required placeholder="Ej. 2 kilos de arroz, 1 jabón de platos…"></textarea></div>
-        <button class="btn gold" type="submit">Enviar solicitud</button>
-      </form>
-    </section>`;
-}
-
-function pContacto(){
-  return `
-    <section class="pad-s">
-      <h2 class="sec-title">Contáctenos</h2>
-      <p class="sec-sub">Estamos para ayudarle</p>
-      <div class="contacto-box">
-        <p>📍 [Dirección]</p>
-        <p>📞 [Teléfono]</p>
-        <p>✉️ [Correo]</p>
-        <p>🕘 [Horario de atención]</p>
-        <p style="margin-top:18px">
-          <a class="btn wa" style="color:#fff;text-decoration:none;display:inline-block" target="_blank" rel="noopener"
-             href="https://wa.me/${WA_NUMBER}?text=${encodeURIComponent('Hola, quisiera más información.')}">Escribir por WhatsApp</a>
+    <section class="section-block">
+      <h2 class="section-block__title">Horarios de sorteo</h2>
+      <div class="panel" style="padding:20px">
+        <div class="sorteos-grid">
+          ${Object.entries(SORTEOS).map(([nombre, horas]) => `
+            <div class="sorteo-card">
+              <h3>${nombre}</h3>
+              <div class="chips">
+                ${horas.map(([h,m]) => `<span class="chip-hora" data-sorteo="${nombre}" data-min="${h*60+m}">${fmtHora(h,m)}</span>`).join('')}
+              </div>
+            </div>`).join('')}
+        </div>
+        <p class="panel__hint" style="margin-top:14px">
+          Próximo sorteo: <strong data-prox="val"></strong> <span data-prox="hint"></span> · Horario de Costa Rica
         </p>
       </div>
     </section>`;
 }
 
-function pAdmin(){
-  const tabs = [['noticias','Noticias'],['eventos','Tiempos y eventos'],['pedidos','Pedidos']];
-  let cuerpo = '';
-
-  if (adminTab === 'noticias'){
-    cuerpo = `
-      <div class="panel">
-        <h3>Nueva noticia</h3>
-        <form id="form-noticia" class="grid-form">
-          <div><label>Título</label><input name="titulo" required></div>
-          <div><label>Categoría</label><select name="cat">${CATS.map(c => `<option>${esc(c)}</option>`).join('')}</select></div>
-          <div><label>Fecha</label><input name="fecha" type="date" value="${hoyISO()}" required></div>
-          <div style="grid-column:1/-1"><label>Resumen</label><textarea name="resumen" rows="3" required></textarea></div>
-          <div><button class="btn gold" type="submit">Publicar</button></div>
-        </form>
-      </div>
-      <div class="panel"><h3>Noticias publicadas</h3>
-        <div class="scroll"><table>
-          <thead><tr><th>Fecha</th><th>Categoría</th><th>Título</th><th></th></tr></thead>
-          <tbody>${db.noticias.map(n => `
-            <tr><td>${esc(n.fecha)}</td><td>${esc(n.cat)}</td><td>${esc(n.titulo)}</td>
-            <td><button class="btn small del" data-act="del-noticia" data-id="${n.id}">Eliminar</button></td></tr>`).join('')}
-          </tbody>
-        </table></div>
-      </div>`;
-  }
-
-  if (adminTab === 'eventos'){
-    cuerpo = `
-      <div class="panel">
-        <h3>Nuevo evento</h3>
-        <form id="form-evento" class="grid-form">
-          <div><label>Título</label><input name="titulo" required></div>
-          <div><label>Fecha</label><input name="fecha" type="date" value="${hoyISO()}" required></div>
-          <div><label>Lugar</label><input name="lugar" value="La Bodeguita"></div>
-          <div style="grid-column:1/-1"><label>Descripción</label><textarea name="desc" rows="3"></textarea></div>
-          <div><button class="btn gold" type="submit">Publicar</button></div>
-        </form>
-      </div>
-      <div class="panel"><h3>Eventos</h3>
-        <div class="scroll"><table>
-          <thead><tr><th>Fecha</th><th>Título</th><th>Lugar</th><th></th></tr></thead>
-          <tbody>${db.eventos.map(e => `
-            <tr><td>${esc(e.fecha)}</td><td>${esc(e.titulo)}</td><td>${esc(e.lugar)}</td>
-            <td><button class="btn small del" data-act="del-evento" data-id="${e.id}">Eliminar</button></td></tr>`).join('')}
-          </tbody>
-        </table></div>
-      </div>`;
-  }
-
-  if (adminTab === 'pedidos'){
-    cuerpo = `
-      <div class="panel"><h3>Solicitudes recibidas</h3>
-        ${db.pedidos.length ? `<div class="scroll"><table>
-          <thead><tr><th>Fecha</th><th>Tipo</th><th>Cliente</th><th>Detalle</th><th>Estado</th><th></th></tr></thead>
-          <tbody>${db.pedidos.map(p => `
-            <tr>
-              <td>${fechaHora(p.fecha)}</td>
-              <td>${esc(p.tipo)}</td>
-              <td>${esc(p.nombre)}<br><small>${esc(p.tel)}</small></td>
-              <td>${esc(p.detalle)}</td>
-              <td><select data-act="estado" data-id="${p.id}">
-                ${ESTADOS.map(s => `<option ${s === p.estado ? 'selected' : ''}>${s}</option>`).join('')}
-              </select></td>
-              <td><button class="btn small del" data-act="del-pedido" data-id="${p.id}">✕</button></td>
-            </tr>`).join('')}
-          </tbody></table></div>`
-        : '<p class="empty">No hay solicitudes todavía</p>'}
-      </div>`;
-  }
-
+/* ============ VISTAS ============ */
+function vistaLogin(){
   return `
-    <section class="pad-s">
-      <div class="adm-head">
-        <h2>Administración</h2>
-        <button class="btn small" data-act="logout">Salir</button>
-      </div>
-      <div class="adm-tabs">
-        ${tabs.map(([k,l]) => `<button class="${adminTab === k ? 'on' : ''}" data-act="atab" data-t="${k}">${l}</button>`).join('')}
-      </div>
-      ${cuerpo}
+    <div class="login-screen">
+      <div class="canopy canopy--one" aria-hidden="true"></div>
+      <div class="canopy canopy--two" aria-hidden="true"></div>
+      <form class="login-card" data-form="login">
+        <div class="sidebar__mark sidebar__mark--lg">LB</div>
+        <h2>La Bodeguita</h2>
+        <p class="panel__hint">Panel Admin · ingrese el PIN</p>
+        ${field('PIN', '<input name="pin" type="password" inputmode="numeric" required autocomplete="off">')}
+        <button class="btn-primary" type="submit">Entrar</button>
+        <p class="login-error" id="login-err"></p>
+      </form>
+    </div>`;
+}
+
+function vistaResumen(){
+  const nuevos = db.pedidos.filter(p => p.estado === 'Nuevo').length;
+  const bajo = db.productos.filter(p => p.stock <= p.minimo).length;
+  return `
+    <div class="metrics-grid">
+      ${metric('Neto de hoy', fmt(neto(movsDeHoy())), 'Todos los negocios')}
+      ${metric('Pedidos nuevos', nuevos, 'Sin atender', 'amber')}
+      ${metric('Bajo stock', bajo, 'Productos en mínimo', 'mint')}
+      ${metric('Próximo sorteo', '<span data-prox="val" style="font-size:20px"></span>', '<span data-prox="hint"></span>')}
+    </div>
+    <section class="section-block">
+      <h2 class="section-block__title">Últimos movimientos</h2>
+      <div class="panel">${tablaMovs(db.ventas.slice(0,10), true)}</div>
     </section>`;
 }
 
-/* ============ RENDER Y RUTAS ============ */
-function render(r){
-  const pages = { inicio:pInicio, noticias:pNoticias, eventos:pEventos, pedidos:pPedidos, contacto:pContacto, admin:pAdmin };
-  const fn = pages[r] || pInicio;
-  document.getElementById('app').innerHTML = fn();
-  document.querySelectorAll('nav a[data-r]').forEach(a => a.classList.toggle('on', a.dataset.r === r));
-  if (r === 'noticias') filtrarNoticias();
-  window.scrollTo(0,0);
-}
+function vistaNegocio(k){
+  const n = NEGOCIOS[k];
+  const movs = db.ventas.filter(v => v.biz === k);
+  const hoy = neto(movs.filter(v => fechaCR(v.fecha) === hoyCR()));
+  let html = '';
 
-function route(){
-  let r = location.hash.replace('#','') || 'inicio';
-  if (r === 'admin' && sessionStorage.getItem('adm') !== 'ok'){
-    const pin = prompt('PIN de administración');
-    if (pin === ADMIN_PIN){
-      sessionStorage.setItem('adm','ok');
-    } else {
-      if (pin !== null) alert('PIN incorrecto');
-      location.hash = 'inicio';
-      return;
-    }
-  }
-  if (r !== 'pedidos') flash = '';
-  render(r);
-}
-window.addEventListener('hashchange', route);
-
-/* ============ EVENTOS ============ */
-const app = document.getElementById('app');
-
-app.addEventListener('input', e => {
-  if (e.target.id === 'buscar'){
-    noticiasFiltro.q = e.target.value;
-    filtrarNoticias();
-  }
-});
-
-app.addEventListener('change', e => {
-  const el = e.target.closest('[data-act="estado"]');
-  if (el){
-    const p = db.pedidos.find(x => x.id === el.dataset.id);
-    if (p){ p.estado = el.value; save(); }
-  }
-});
-
-app.addEventListener('click', e => {
-  const b = e.target.closest('[data-act]');
-  if (!b) return;
-  const act = b.dataset.act;
-
-  if (act === 'chip'){
-    noticiasFiltro.cat = b.dataset.cat;
-    document.querySelectorAll('.chip').forEach(c => c.classList.toggle('on', c.dataset.cat === noticiasFiltro.cat));
-    filtrarNoticias();
-  }
-  if (act === 'atab'){ adminTab = b.dataset.t; render('admin'); }
-  if (act === 'logout'){
-    sessionStorage.removeItem('adm');
-    location.hash = 'inicio';
-  }
-  if (act === 'del-noticia' && confirm('¿Eliminar esta noticia?')){
-    db.noticias = db.noticias.filter(n => n.id !== b.dataset.id);
-    save(); render('admin');
-  }
-  if (act === 'del-evento' && confirm('¿Eliminar este evento?')){
-    db.eventos = db.eventos.filter(x => x.id !== b.dataset.id);
-    save(); render('admin');
-  }
-  if (act === 'del-pedido' && confirm('¿Eliminar esta solicitud?')){
-    db.pedidos = db.pedidos.filter(x => x.id !== b.dataset.id);
-    save(); render('admin');
-  }
-});
-
-app.addEventListener('submit', e => {
-  e.preventDefault();
-  const f = e.target;
-  const d = Object.fromEntries(new FormData(f).entries());
-
-  if (f.id === 'form-busqueda'){
-    noticiasFiltro.q = (d.q || '').trim();
-    noticiasFiltro.cat = 'Todas';
-    location.hash = 'noticias';
-    render('noticias');
-  }
-
-  if (f.id === 'form-pedido'){
-    const id = uid();
-    db.pedidos.unshift({ id, tipo:d.tipo, nombre:d.nombre.trim(), tel:d.tel.trim(), detalle:d.detalle.trim(), estado:'Nuevo', fecha:new Date().toISOString() });
-    save();
-    const texto = `Hola, soy ${d.nombre}. Solicitud: ${d.tipo}. ${d.detalle}`;
-    flash = `¡Gracias ${esc(d.nombre)}! Recibimos su solicitud. Si quiere confirmarla más rápido, escríbanos por <a href="https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(texto)}" target="_blank" rel="noopener">WhatsApp</a>.`;
-    render('pedidos');
-  }
-
-  if (f.id === 'form-noticia'){
-    db.noticias.unshift({ id:uid(), cat:d.cat, titulo:d.titulo.trim(), fecha:d.fecha, resumen:d.resumen.trim() });
-    save(); render('admin');
-  }
-
-  if (f.id === 'form-evento'){
-    db.eventos.push({ id:uid(), titulo:d.titulo.trim(), fecha:d.fecha, lugar:(d.lugar||'').trim(), desc:(d.desc||'').trim() });
-    save(); render('admin');
-  }
-});
-
-route();
-</script>
-</body>
-</html>
+  if (k === 'tiempos') html += panelSo
