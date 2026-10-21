@@ -4,9 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>La Bodeguita · Panel Admin</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=IBM+Plex+Mono:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --char-950:#171310;--char-900:#221b16;--char-700:#3a2c22;
@@ -157,7 +154,7 @@ a{color:inherit;font-weight:600}
 </style>
 </head>
 <body>
-<div id="app"></div>
+<div id="app"><p style="padding:40px;font-family:system-ui,sans-serif">Cargando panel…</p></div>
 
 <script>
 /* ============ CONFIGURACIÓN ============ */
@@ -170,6 +167,8 @@ const PAGOS = ['Efectivo','SINPE Móvil','Tarjeta'];
 const ESTADOS = ['Nuevo','En proceso','Listo','Entregado'];
 const ESTADO_BADGE = { 'Nuevo':'blue', 'En proceso':'amber', 'Listo':'green', 'Entregado':'gray' };
 const TIPOS_PEDIDO = ['Abarrotes a domicilio','Servicio BN','Consulta de Tiempos, Lotería o Chances','Otro'];
+
+const ROLES = ['Administrador','Caja','Bodega / inventario','Servicios BN','Tiempos y lotería'];
 
 const NEGOCIOS = {
   bn:        { nombre:'BN Servicios',  badge:'green',  tipos:['Pago de servicio','Recarga','Trámite','Otro'] },
@@ -193,7 +192,8 @@ const NAV = [
   ['loteria',   'Lotería JPS',    '🎟️'],
   ['chances',   'Chances JPS',    '🎫'],
   ['caja',      'Cierre de caja', '💵'],
-  ['inventario','Abarrotes',      '📦']
+  ['inventario','Abarrotes',      '📦'],
+  ['equipo',    'Equipo',         '🔑']
 ];
 
 const TITLES = {
@@ -204,13 +204,15 @@ const TITLES = {
   loteria:    ['Lotería JPS', 'Ventas y premios de Lotería'],
   chances:    ['Chances JPS', 'Ventas y premios de Chances'],
   caja:       ['Cierre de caja', 'Movimientos y totales por negocio'],
-  inventario: ['Abarrotes', 'Existencias, precios y ventas de mostrador']
+  inventario: ['Abarrotes', 'Existencias, precios y ventas de mostrador'],
+  equipo:     ['Equipo', 'Integrantes del negocio y su rol']
 };
 
 /* Datos de ejemplo: borrar o cambiar desde el panel */
 const SEED = {
   ventas: [],
   pedidos: [],
+  equipo: [],
   productos: [
     { id:'p1', nombre:'Arroz 1 kg (ejemplo)',       precio:1200, stock:20, minimo:5 },
     { id:'p2', nombre:'Aceite 1 L (ejemplo)',       precio:2100, stock:3,  minimo:5 },
@@ -226,7 +228,10 @@ try { logged = sessionStorage.getItem(SESS) === 'ok'; } catch(e) {}
 function load(){
   try {
     const d = JSON.parse(localStorage.getItem(KEY));
-    if (d && Array.isArray(d.ventas) && Array.isArray(d.pedidos) && Array.isArray(d.productos)) return d;
+    if (d && Array.isArray(d.ventas) && Array.isArray(d.pedidos) && Array.isArray(d.productos)) {
+      if (!Array.isArray(d.equipo)) d.equipo = [];
+      return d;
+    }
   } catch(e) {}
   return JSON.parse(JSON.stringify(SEED));
 }
@@ -373,4 +378,386 @@ function vistaNegocio(k){
   const hoy = neto(movs.filter(v => fechaCR(v.fecha) === hoyCR()));
   let html = '';
 
-  if (k === 'tiempos') html += panelSo
+  if (k === 'tiempos') html += panelSorteos();
+  if (k === 'loteria' || k === 'chances') {
+    html += `<div class="panel"><div class="panel--empty"><p><strong>Horario de sorteo:</strong> pendiente de confirmar con la JPS.</p></div></div>`;
+  }
+
+  html += `
+    <div class="metrics-grid">
+      ${metric('Neto de hoy', fmt(hoy), n.nombre)}
+      ${metric('Neto acumulado', fmt(neto(movs)), `${movs.length} movimientos`, 'mint')}
+    </div>
+    <section class="section-block">
+      <h2 class="section-block__title">Registrar movimiento</h2>
+      <form class="panel" data-form="venta" data-biz="${k}">
+        <div class="form-grid">
+          ${field('Tipo', `<select name="tipo">${n.tipos.map(t => `<option>${esc(t)}</option>`).join('')}</select>`)}
+          ${field('Detalle (opcional)', '<input name="desc" placeholder="Ej. referencia o cliente">')}
+          ${field('Monto (₡)', '<input name="monto" type="number" min="0" step="any" required>')}
+          ${field('Pago', `<select name="pago">${PAGOS.map(p => `<option>${p}</option>`).join('')}</select>`)}
+          <div class="form-actions full"><button class="btn-primary" type="submit">Registrar</button></div>
+        </div>
+      </form>
+    </section>
+    <section class="section-block">
+      <h2 class="section-block__title">Movimientos</h2>
+      <div class="panel">${tablaMovs(movs, false)}</div>
+    </section>`;
+  return html;
+}
+
+function vistaPedidos(){
+  const form = `
+    <section class="section-block">
+      <h2 class="section-block__title">Nueva solicitud</h2>
+      <form class="panel" data-form="pedido">
+        <div class="form-grid">
+          ${field('Tipo', `<select name="tipo">${TIPOS_PEDIDO.map(t => `<option>${esc(t)}</option>`).join('')}</select>`)}
+          ${field('Cliente', '<input name="nombre" required>')}
+          ${field('Teléfono', '<input name="tel" type="tel" required>')}
+          ${field('Detalle', '<textarea name="detalle" rows="2" required placeholder="Ej. 2 kilos de arroz, 1 jabón…"></textarea>', 'full')}
+          <div class="form-actions full"><button class="btn-primary" type="submit">Registrar solicitud</button></div>
+        </div>
+      </form>
+    </section>`;
+
+  const rows = db.pedidos.map(p => {
+    const siguiente = ESTADOS[ESTADOS.indexOf(p.estado) + 1];
+    return `<tr>
+      ${td('Fecha', fechaHora(p.fecha))}
+      ${td('Tipo', esc(p.tipo))}
+      ${td('Cliente', `${esc(p.nombre)}<br><span class="order-sub">${esc(p.tel)}</span>`)}
+      ${td('Detalle', `<span class="order-items">${esc(p.detalle)}</span>`)}
+      ${td('Estado', `<span class="badge badge--${ESTADO_BADGE[p.estado]}">${p.estado}</span>`)}
+      ${td('Acciones', `<div class="order-actions">
+        ${siguiente ? `<button class="action-btn action-btn--blue" data-act="avanzar" data-id="${p.id}">Pasar a ${siguiente}</button>` : ''}
+        <button class="action-btn action-btn--red" data-act="del-pedido" data-id="${p.id}">Eliminar</button>
+      </div>`)}
+    </tr>`;
+  }).join('');
+
+  return form + `
+    <section class="section-block">
+      <h2 class="section-block__title">Solicitudes</h2>
+      <div class="panel">${db.pedidos.length
+        ? tabla(['Fecha','Tipo','Cliente','Detalle','Estado','Acciones'], rows)
+        : vacio('No hay solicitudes todavía')}</div>
+    </section>`;
+}
+
+function vistaCaja(){
+  const hoyL = movsDeHoy();
+  const filas = Object.entries(NEGOCIOS).map(([k,n]) => {
+    const l = db.ventas.filter(v => v.biz === k);
+    return `<tr>
+      ${td('Negocio', `<span class="badge badge--${n.badge}">${n.nombre}</span>`)}
+      ${td('Movimientos', l.length)}
+      ${td('Neto hoy', `<span class="mono">${fmt(neto(l.filter(v => fechaCR(v.fecha) === hoyCR())))}</span>`)}
+      ${td('Neto acumulado', `<span class="mono">${fmt(neto(l))}</span>`)}
+    </tr>`;
+  }).join('');
+
+  return `
+    <div class="metrics-grid">
+      ${metric('Neto de hoy', fmt(neto(hoyL)), 'Todos los negocios')}
+      ${metric('Efectivo hoy', fmt(sumaPago(hoyL,'Efectivo')))}
+      ${metric('SINPE hoy', fmt(sumaPago(hoyL,'SINPE Móvil')), '', 'mint')}
+      ${metric('Tarjeta hoy', fmt(sumaPago(hoyL,'Tarjeta')), '', 'amber')}
+    </div>
+    <section class="section-block">
+      <h2 class="section-block__title">Neto por negocio</h2>
+      <div class="panel">${tabla(['Negocio','Movimientos','Neto hoy','Neto acumulado'], filas)}</div>
+    </section>
+    <section class="section-block">
+      <h2 class="section-block__title">Todos los movimientos</h2>
+      <div class="panel">${tablaMovs(db.ventas, true)}</div>
+    </section>`;
+}
+
+function vistaInventario(){
+  const form = `
+    <section class="section-block">
+      <h2 class="section-block__title">Nuevo producto</h2>
+      <form class="panel" data-form="producto">
+        <div class="form-grid">
+          ${field('Nombre', '<input name="nombre" required>')}
+          ${field('Precio (₡)', '<input name="precio" type="number" min="0" step="any" required>')}
+          ${field('Existencias', '<input name="stock" type="number" min="0" step="1" required>')}
+          ${field('Mínimo', '<input name="minimo" type="number" min="0" step="1" value="5" required>')}
+          <div class="form-actions full"><button class="btn-primary" type="submit">Agregar producto</button></div>
+        </div>
+      </form>
+    </section>`;
+
+  const rows = db.productos.map(p => `<tr>
+    ${td('Producto', esc(p.nombre))}
+    ${td('Precio', `<span class="mono">${fmt(p.precio)}</span>`)}
+    ${td('Existencias', `<div class="stock-ctrl">
+      <button class="action-btn" data-act="stock" data-id="${p.id}" data-d="-1" aria-label="Restar">−</button>
+      <span class="mono ${p.stock <= p.minimo ? 'is-low' : ''}">${p.stock}</span>
+      <button class="action-btn" data-act="stock" data-id="${p.id}" data-d="1" aria-label="Sumar">+</button>
+    </div>`)}
+    ${td('Mínimo', p.minimo)}
+    ${td('Acciones', `<div class="order-actions">
+      <button class="action-btn action-btn--green" data-act="vender" data-id="${p.id}" ${p.stock < 1 ? 'disabled' : ''}>Vender 1</button>
+      <button class="action-btn action-btn--red" data-act="del-producto" data-id="${p.id}">Eliminar</button>
+    </div>`)}
+  </tr>`).join('');
+
+  return form + `
+    <section class="section-block">
+      <h2 class="section-block__title">Inventario</h2>
+      <div class="panel">${db.productos.length
+        ? tabla(['Producto','Precio','Existencias','Mínimo','Acciones'], rows)
+        : vacio('No hay productos registrados')}</div>
+    </section>
+    <section class="section-block">
+      <h2 class="section-block__title">Ventas de abarrotes</h2>
+      <div class="panel">${tablaMovs(db.ventas.filter(v => v.biz === 'abarrotes'), false)}</div>
+    </section>`;
+}
+
+function vistaEquipo(){
+  const activos = db.equipo.filter(e => e.activo).length;
+  const form = `
+    <section class="section-block">
+      <h2 class="section-block__title">Nuevo integrante</h2>
+      <form class="panel" data-form="equipo">
+        <div class="form-grid">
+          ${field('Nombre', '<input name="nombre" required>')}
+          ${field('Rol', `<select name="rol">${ROLES.map(r => `<option>${esc(r)}</option>`).join('')}</select>`)}
+          <div class="form-actions full"><button class="btn-primary" type="submit">Agregar</button></div>
+        </div>
+      </form>
+    </section>`;
+  const rows = db.equipo.map(e => `<tr>
+    ${td('Nombre', esc(e.nombre))}
+    ${td('Rol', `<span class="badge badge--blue">${esc(e.rol)}</span>`)}
+    ${td('Estado', `<span class="badge badge--${e.activo ? 'green' : 'gray'}">${e.activo ? 'Activo' : 'Inactivo'}</span>`)}
+    ${td('Acciones', `<div class="order-actions">
+      <button class="action-btn action-btn--amber" data-act="toggle-equipo" data-id="${e.id}">${e.activo ? 'Desactivar' : 'Activar'}</button>
+      <button class="action-btn action-btn--red" data-act="del-equipo" data-id="${e.id}">Eliminar</button>
+    </div>`)}
+  </tr>`).join('');
+
+  return `
+    <div class="metrics-grid">
+      ${metric('Integrantes', db.equipo.length, 'Registrados')}
+      ${metric('Activos', activos, 'Marcados como activos', 'mint')}
+    </div>` + form + `
+    <section class="section-block">
+      <h2 class="section-block__title">Lista del equipo</h2>
+      <div class="panel">${db.equipo.length
+        ? tabla(['Nombre','Rol','Estado','Acciones'], rows)
+        : vacio('Todavía no hay integrantes registrados')}</div>
+    </section>`;
+}
+
+/* ============ SHELL Y RENDER ============ */
+function shell(sec, body){
+  const [titulo, sub] = TITLES[sec];
+  const bajo = db.productos.filter(p => p.stock <= p.minimo);
+  const banner = bajo.length
+    ? `<div class="low-stock">⚠ Bajo stock: ${bajo.map(p => esc(p.nombre)).join(', ')}</div>`
+    : '';
+  return `
+    <div class="app-shell">
+      <div class="canopy canopy--one" aria-hidden="true"></div>
+      <div class="canopy canopy--two" aria-hidden="true"></div>
+
+      <aside class="sidebar">
+        <div class="sidebar__brand">
+          <div class="sidebar__mark">LB</div>
+          <div>
+            <p class="sidebar__title">La Bodeguita</p>
+            <p class="sidebar__subtitle">Panel Admin</p>
+          </div>
+        </div>
+        <nav class="sidebar__nav">
+          ${NAV.map(([id,label,icon]) => `
+            <a class="sidebar__link ${sec === id ? 'is-active' : ''}" href="#${id}" ${sec === id ? 'aria-current="page"' : ''}>
+              <span class="sidebar__icon" aria-hidden="true">${icon}</span>${label}
+            </a>`).join('')}
+        </nav>
+        <div class="sidebar__footer">
+          <p>Agente autorizado BN</p>
+          <p class="mono sidebar__project">Administración</p>
+          <button class="btn-secondary" style="margin-top:8px" data-act="logout">Cerrar sesión</button>
+        </div>
+      </aside>
+
+      <div class="app-main">
+        <header class="topbar">
+          <div>
+            <h1 class="topbar__title">${titulo}</h1>
+            <p class="topbar__subtitle">${sub}</p>
+          </div>
+          <div class="topbar__right">
+            <div class="topbar__status is-live"><span class="topbar__dot"></span>Datos guardados en este equipo</div>
+            <button class="topbar__logout" data-act="logout">Salir</button>
+          </div>
+        </header>
+        ${banner}
+        <main class="app-content">${body}</main>
+      </div>
+    </div>`;
+}
+
+function renderPanel(){
+  const app = document.getElementById('app');
+  if (!logged) { app.innerHTML = vistaLogin(); return; }
+
+  const sec = location.hash.replace('#','') || 'resumen';
+  const vistas = {
+    resumen: vistaResumen,
+    pedidos: vistaPedidos,
+    bn: () => vistaNegocio('bn'),
+    tiempos: () => vistaNegocio('tiempos'),
+    loteria: () => vistaNegocio('loteria'),
+    chances: () => vistaNegocio('chances'),
+    caja: vistaCaja,
+    inventario: vistaInventario,
+    equipo: vistaEquipo
+  };
+  const key = vistas[sec] ? sec : 'resumen';
+  app.innerHTML = shell(key, vistas[key]());
+  updateCountdown();
+}
+
+function render(){
+  try { renderPanel(); }
+  catch (err) {
+    console.error(err);
+    document.getElementById('app').innerHTML =
+      `<div style="padding:40px;font-family:system-ui,sans-serif"><h2>No se pudo cargar el panel</h2>
+       <p style="margin:10px 0">${esc(err && err.message)}</p>
+       <button onclick="location.reload()" style="padding:10px 16px">Recargar</button></div>`;
+  }
+}
+
+/* ============ EVENTOS ============ */
+const app = document.getElementById('app');
+
+app.addEventListener('click', e => {
+  const b = e.target.closest('[data-act]');
+  if (!b) return;
+  const act = b.dataset.act;
+  const id = b.dataset.id;
+
+  if (act === 'logout'){
+    logged = false;
+    try { sessionStorage.removeItem(SESS); } catch(_) {}
+    location.hash = '';
+    render();
+  }
+
+  if (act === 'del-venta' && confirm('¿Eliminar este movimiento?')){
+    db.ventas = db.ventas.filter(v => v.id !== id);
+    guardar(); render();
+  }
+
+  if (act === 'avanzar'){
+    const p = db.pedidos.find(x => x.id === id);
+    if (p){
+      const i = ESTADOS.indexOf(p.estado);
+      p.estado = ESTADOS[Math.min(i + 1, ESTADOS.length - 1)];
+      guardar(); render();
+    }
+  }
+
+  if (act === 'del-pedido' && confirm('¿Eliminar esta solicitud?')){
+    db.pedidos = db.pedidos.filter(x => x.id !== id);
+    guardar(); render();
+  }
+
+  if (act === 'stock'){
+    const p = db.productos.find(x => x.id === id);
+    if (p){
+      p.stock = Math.max(0, p.stock + Number(b.dataset.d));
+      guardar(); render();
+    }
+  }
+
+  if (act === 'vender'){
+    const p = db.productos.find(x => x.id === id);
+    if (!p || p.stock < 1) return;
+    p.stock--;
+    db.ventas.unshift({ id:uid(), biz:'abarrotes', tipo:'Venta mostrador', desc:p.nombre, monto:p.precio, pago:'Efectivo', fecha:new Date().toISOString() });
+    guardar(); render();
+  }
+
+  if (act === 'toggle-equipo'){
+    const e = db.equipo.find(x => x.id === id);
+    if (e){ e.activo = !e.activo; guardar(); render(); }
+  }
+
+  if (act === 'del-equipo' && confirm('¿Eliminar este integrante?')){
+    db.equipo = db.equipo.filter(x => x.id !== id);
+    guardar(); render();
+  }
+
+  if (act === 'del-producto' && confirm('¿Eliminar este producto?')){
+    db.productos = db.productos.filter(x => x.id !== id);
+    guardar(); render();
+  }
+});
+
+app.addEventListener('submit', e => {
+  e.preventDefault();
+  const f = e.target;
+  const d = Object.fromEntries(new FormData(f).entries());
+
+  if (f.dataset.form === 'login'){
+    if (d.pin === ADMIN_PIN){
+      logged = true;
+      try { sessionStorage.setItem(SESS, 'ok'); } catch(_) {}
+      render();
+    } else {
+      const el = document.getElementById('login-err');
+      if (el) el.textContent = 'PIN incorrecto';
+    }
+  }
+
+  if (f.dataset.form === 'venta'){
+    const cantidad = parseFloat(d.monto);
+    if (!(cantidad > 0)) { alert('Ingrese un monto válido'); return; }
+    db.ventas.unshift({
+      id:uid(), biz:f.dataset.biz, tipo:d.tipo, desc:(d.desc || '').trim(),
+      monto:cantidad, pago:d.pago, fecha:new Date().toISOString()
+    });
+    guardar(); render();
+  }
+
+  if (f.dataset.form === 'pedido'){
+    db.pedidos.unshift({
+      id:uid(), tipo:d.tipo, nombre:d.nombre.trim(), tel:d.tel.trim(),
+      detalle:d.detalle.trim(), estado:'Nuevo', fecha:new Date().toISOString()
+    });
+    guardar(); render();
+  }
+
+  if (f.dataset.form === 'equipo'){
+    if (!d.nombre.trim()) { alert('Ingrese el nombre'); return; }
+    db.equipo.push({ id:uid(), nombre:d.nombre.trim(), rol:d.rol, activo:true });
+    guardar(); render();
+  }
+
+  if (f.dataset.form === 'producto'){
+    const precio = parseFloat(d.precio);
+    const stock = parseInt(d.stock, 10);
+    const minimo = parseInt(d.minimo, 10);
+    if (!d.nombre.trim() || !(precio >= 0) || isNaN(stock) || stock < 0 || isNaN(minimo) || minimo < 0){
+      alert('Complete nombre, precio, existencias y mínimo'); return;
+    }
+    db.productos.push({ id:uid(), nombre:d.nombre.trim(), precio, stock, minimo });
+    guardar(); render();
+  }
+});
+
+window.addEventListener('hashchange', render);
+setInterval(updateCountdown, 30000);
+render();
+</script>
+</body>
+</html>
