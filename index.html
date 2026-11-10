@@ -250,6 +250,9 @@ const fechaHora = iso => new Date(iso).toLocaleString('es-CR',{timeZone:TZ,dateS
 
 /* Positivo = venta; "premio" resta (pago de premio) */
 const monto = v => /premio/i.test(v.tipo) ? -Number(v.monto) : Number(v.monto);
+/* Comisión que gana el agente (los premios no generan comisión) */
+const comision = v => /premio/i.test(v.tipo) ? 0 : (Number(v.comision) || 0);
+const comisiones = lista => lista.reduce((s,v) => s + comision(v), 0);
 const neto = lista => lista.reduce((s,v) => s + monto(v), 0);
 const movsDeHoy = () => db.ventas.filter(v => fechaCR(v.fecha) === hoyCR());
 const sumaPago = (lista, pago) => neto(lista.filter(v => v.pago === pago));
@@ -302,17 +305,23 @@ const tabla = (heads, rows) => `
 
 function tablaMovs(lista, conNegocio){
   if (!lista.length) return vacio('Sin movimientos todavía');
-  const heads = ['Fecha', ...(conNegocio ? ['Negocio'] : []), 'Tipo', 'Detalle', 'Pago', 'Monto', ''];
+  const heads = ['Fecha', ...(conNegocio ? ['Negocio'] : []), 'Tipo', 'Detalle y referencia', 'Pago', 'Monto', 'Comisión', 'Conciliado', ''];
   const rows = lista.map(v => {
     const b = NEGOCIOS[v.biz] || { nombre: v.biz, badge: 'gray' };
+    const ref = v.ref ? `<br><span class="order-sub">Ref: ${esc(v.ref)}</span>` : '';
     return `<tr>
       ${td('Fecha', fechaHora(v.fecha))}
       ${conNegocio ? td('Negocio', esc(b.nombre)) : ''}
       ${td('Tipo', `<span class="badge badge--${b.badge}">${esc(v.tipo)}</span>`)}
-      ${td('Detalle', esc(v.desc) || '—')}
+      ${td('Detalle', `${esc(v.desc) || '—'}${ref}`)}
       ${td('Pago', esc(v.pago))}
       ${td('Monto', `<span class="mono">${fmt(monto(v))}</span>`)}
-      ${td('', `<button class="action-btn action-btn--red" data-act="del-venta" data-id="${v.id}">Eliminar</button>`)}
+      ${td('Comisión', `<span class="mono">${fmt(comision(v))}</span>`)}
+      ${td('Conciliado', `<span class="badge badge--${v.conciliado ? 'green' : 'amber'}">${v.conciliado ? 'Sí' : 'Pendiente'}</span>`)}
+      ${td('', `<div class="order-actions">
+        <button class="action-btn action-btn--blue" data-act="conciliar" data-id="${v.id}">${v.conciliado ? 'Desmarcar' : 'Conciliar'}</button>
+        <button class="action-btn action-btn--red" data-act="del-venta" data-id="${v.id}">Eliminar</button>
+      </div>`)}
     </tr>`;
   }).join('');
   return tabla(heads, rows);
@@ -367,6 +376,15 @@ function vistaResumen(){
       ${metric('Próximo sorteo', '<span data-prox="val" style="font-size:20px"></span>', '<span data-prox="hint"></span>')}
     </div>
     <section class="section-block">
+      <h2 class="section-block__title">Portales</h2>
+      <div class="panel" style="padding:20px;display:flex;flex-wrap:wrap;gap:10px">
+        <a class="btn-primary" href="https://bnservicios.bncr.fi.cr/" target="_blank" rel="noopener noreferrer" style="text-decoration:none">BN Servicios ↗</a>
+        <a class="btn-primary" href="https://www.tucan.fi.cr/wps/portal/tucan" target="_blank" rel="noopener noreferrer" style="text-decoration:none">BCR Tucán ↗</a>
+        <a class="btn-primary" href="https://www.jpsenlinea.go.cr/JPSEnLinea/" target="_blank" rel="noopener noreferrer" style="text-decoration:none">JPS en línea ↗</a>
+        <p class="panel__hint" style="width:100%">Se abren en una pestaña nueva. Ingrese sus credenciales directamente en cada portal; el panel no las guarda.</p>
+      </div>
+    </section>
+    <section class="section-block">
       <h2 class="section-block__title">Últimos movimientos</h2>
       <div class="panel">${tablaMovs(db.ventas.slice(0,10), true)}</div>
     </section>`;
@@ -396,6 +414,9 @@ function vistaNegocio(k){
           ${field('Detalle (opcional)', '<input name="desc" placeholder="Ej. referencia o cliente">')}
           ${field('Monto (₡)', '<input name="monto" type="number" min="0" step="any" required>')}
           ${field('Pago', `<select name="pago">${PAGOS.map(p => `<option>${p}</option>`).join('')}</select>`)}
+          ${field('Referencia', '<input name="ref" placeholder="N.º de comprobante">')}
+          ${field('Comisión (₡)', '<input name="comision" type="number" min="0" step="any" value="0">')}
+          <div class="field"><span>Conciliado</span><label style="display:flex;gap:8px;align-items:center;text-transform:none;font-size:14px;font-weight:500"><input type="checkbox" name="conciliado" style="width:auto"> Ya cuadrado con el reporte</label></div>
           <div class="form-actions full"><button class="btn-primary" type="submit">Registrar</button></div>
         </div>
       </form>
@@ -454,6 +475,7 @@ function vistaCaja(){
       ${td('Negocio', `<span class="badge badge--${n.badge}">${n.nombre}</span>`)}
       ${td('Movimientos', l.length)}
       ${td('Neto hoy', `<span class="mono">${fmt(neto(l.filter(v => fechaCR(v.fecha) === hoyCR())))}</span>`)}
+      ${td('Comisiones', `<span class="mono">${fmt(comisiones(l))}</span>`)}
       ${td('Neto acumulado', `<span class="mono">${fmt(neto(l))}</span>`)}
     </tr>`;
   }).join('');
@@ -464,10 +486,13 @@ function vistaCaja(){
       ${metric('Efectivo hoy', fmt(sumaPago(hoyL,'Efectivo')))}
       ${metric('SINPE hoy', fmt(sumaPago(hoyL,'SINPE Móvil')), '', 'mint')}
       ${metric('Tarjeta hoy', fmt(sumaPago(hoyL,'Tarjeta')), '', 'amber')}
+      ${metric('Comisiones hoy', fmt(comisiones(hoyL)), 'Ganancia del día', 'mint')}
+      ${metric('Comisiones acumuladas', fmt(comisiones(db.ventas)), 'Ganancia total', 'mint')}
+      ${metric('Por conciliar', db.ventas.filter(v => !v.conciliado).length, 'Movimientos sin cuadrar', 'amber')}
     </div>
     <section class="section-block">
       <h2 class="section-block__title">Neto por negocio</h2>
-      <div class="panel">${tabla(['Negocio','Movimientos','Neto hoy','Neto acumulado'], filas)}</div>
+      <div class="panel">${tabla(['Negocio','Movimientos','Neto hoy','Comisiones','Neto acumulado'], filas)}</div>
     </section>
     <section class="section-block">
       <h2 class="section-block__title">Todos los movimientos</h2>
@@ -687,6 +712,11 @@ app.addEventListener('click', e => {
     guardar(); render();
   }
 
+  if (act === 'conciliar'){
+    const v = db.ventas.find(x => x.id === id);
+    if (v){ v.conciliado = !v.conciliado; guardar(); render(); }
+  }
+
   if (act === 'toggle-equipo'){
     const e = db.equipo.find(x => x.id === id);
     if (e){ e.activo = !e.activo; guardar(); render(); }
@@ -724,7 +754,8 @@ app.addEventListener('submit', e => {
     if (!(cantidad > 0)) { alert('Ingrese un monto válido'); return; }
     db.ventas.unshift({
       id:uid(), biz:f.dataset.biz, tipo:d.tipo, desc:(d.desc || '').trim(),
-      monto:cantidad, pago:d.pago, fecha:new Date().toISOString()
+      monto:cantidad, pago:d.pago, fecha:new Date().toISOString(),
+      ref:(d.ref || '').trim(), comision:parseFloat(d.comision) || 0, conciliado:d.conciliado === 'on'
     });
     guardar(); render();
   }
