@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>La Bodeguita · Panel Admin</title>
+<title>Carnes Exclusivas Ulloa · Panel Admin</title>
 <style>
 :root{
-  --char-950:#171310;--char-900:#221b16;--char-700:#3a2c22;
-  --flame-600:#d9391f;--flame-500:#e8792b;--ember-400:#f2a53a;--gold-200:#f6d98a;
-  --paper:#fbf4ea;--paper-dim:#f3e6d5;
+  --char-950:#0d0b0b;--char-900:#1a1717;--char-700:#3a2a2a;
+  --flame-600:#d4161c;--flame-500:#e8141c;--ember-400:#f7c600;--gold-200:#ffe066;
+  --paper:#fbf6f4;--paper-dim:#f4e6e4;
   --ink-900:#241c15;--ink-600:#6b5945;--ink-400:#8f7c68;
   --amber-500:#e8792b;--red-500:#c92f1c;--status-green:#3f9868;
   --glass-bg:rgba(255,250,242,.65);--glass-border:rgba(255,255,255,.8);--glass-strong:rgba(255,250,242,.85);
@@ -159,23 +159,19 @@ a{color:inherit;font-weight:600}
 <script>
 /* ============ CONFIGURACIÓN ============ */
 const ADMIN_PIN = '1234';              // Cambiar por un PIN propio
-const KEY = 'bodeguita-panel-v1';
-const SESS = 'bodeguita-adm';
+const KEY = 'ulloa-panel-v1';
+const SESS = 'ulloa-adm';
 const TZ = 'America/Costa_Rica';
 
 const PAGOS = ['Efectivo','SINPE Móvil','Tarjeta'];
 const ESTADOS = ['Nuevo','En proceso','Listo','Entregado'];
 const ESTADO_BADGE = { 'Nuevo':'blue', 'En proceso':'amber', 'Listo':'green', 'Entregado':'gray' };
-const TIPOS_PEDIDO = ['Abarrotes a domicilio','Servicio BN','Consulta de Tiempos, Lotería o Chances','Otro'];
+const TIPOS_PEDIDO = ['Carne a domicilio','Pedido para evento','Pedido por encargo','Otro'];
 
-const ROLES = ['Administrador','Caja','Bodega / inventario','Servicios BN','Tiempos y lotería'];
+const ROLES = ['Administrador','Caja','Carnicería','Entregas'];
 
 const NEGOCIOS = {
-  bn:        { nombre:'BN Servicios',  badge:'green',  tipos:['Pago de servicio','Recarga','Trámite','Otro'] },
-  tiempos:   { nombre:'Tiempos (JPS)', badge:'amber',  tipos:['Venta NICA','Venta TICA','Pago de premio'] },
-  loteria:   { nombre:'Lotería (JPS)', badge:'blue',   tipos:['Venta','Pago de premio'] },
-  chances:   { nombre:'Chances (JPS)', badge:'purple', tipos:['Venta','Pago de premio'] },
-  abarrotes: { nombre:'Abarrotes',     badge:'gray',   tipos:['Venta mostrador','Venta a domicilio','Otro'] }
+  carnes: { nombre:'Venta de carnes', badge:'red', tipos:['Venta mostrador','Pedido a domicilio','Pedido para evento','Otro'] }
 };
 
 /* Horarios de Tiempos (hora de Costa Rica) */
@@ -187,24 +183,18 @@ const SORTEOS = {
 const NAV = [
   ['resumen',   'Resumen',        '◧'],
   ['pedidos',   'Pedidos',        '☰'],
-  ['bn',        'BN Servicios',   '🏦'],
-  ['tiempos',   'Tiempos JPS',    '🎯'],
-  ['loteria',   'Lotería JPS',    '🎟️'],
-  ['chances',   'Chances JPS',    '🎫'],
+  ['ventas',    'Ventas',         '🥩'],
   ['caja',      'Cierre de caja', '💵'],
-  ['inventario','Abarrotes',      '📦'],
+  ['inventario','Inventario',     '📦'],
   ['equipo',    'Equipo',         '🔑']
 ];
 
 const TITLES = {
-  resumen:    ['Resumen', 'Lo que está pasando ahora mismo en La Bodeguita'],
-  pedidos:    ['Pedidos', 'Solicitudes de abarrotes y servicios'],
-  bn:         ['BN Servicios', 'Trámites y pagos como agente autorizado del Banco Nacional'],
-  tiempos:    ['Tiempos JPS', 'Juego oficial de la Junta de Protección Social'],
-  loteria:    ['Lotería JPS', 'Ventas y premios de Lotería'],
-  chances:    ['Chances JPS', 'Ventas y premios de Chances'],
-  caja:       ['Cierre de caja', 'Movimientos y totales por negocio'],
-  inventario: ['Abarrotes', 'Existencias, precios y ventas de mostrador'],
+  resumen:    ['Resumen', 'Lo que está pasando ahora mismo en Carnes Exclusivas Ulloa'],
+  pedidos:    ['Pedidos', 'Pedidos de carne a domicilio, eventos y encargos'],
+  ventas:     ['Ventas', 'Registro de ventas de carnes y comisiones'],
+  caja:       ['Cierre de caja', 'Movimientos y totales del día'],
+  inventario: ['Inventario', 'Cortes, existencias y precios'],
   equipo:     ['Equipo', 'Integrantes del negocio y su rol']
 };
 
@@ -214,9 +204,9 @@ const SEED = {
   pedidos: [],
   equipo: [],
   productos: [
-    { id:'p1', nombre:'Arroz 1 kg (ejemplo)',       precio:1200, stock:20, minimo:5 },
-    { id:'p2', nombre:'Aceite 1 L (ejemplo)',       precio:2100, stock:3,  minimo:5 },
-    { id:'p3', nombre:'Jabón de platos (ejemplo)',  precio:1500, stock:10, minimo:4 }
+    { id:'p1', codigo:'1001', nombre:'Arrachera (ejemplo)',   precio:6500, stock:10, minimo:3 },
+    { id:'p2', codigo:'1002', nombre:'Pollo entero (ejemplo)', precio:2800, stock:12, minimo:4 },
+    { id:'p3', codigo:'1003', nombre:'Chorizo (ejemplo)',      precio:3200, stock:4,  minimo:5 }
   ]
 };
 
@@ -355,8 +345,8 @@ function vistaLogin(){
       <div class="canopy canopy--one" aria-hidden="true"></div>
       <div class="canopy canopy--two" aria-hidden="true"></div>
       <form class="login-card" data-form="login">
-        <div class="sidebar__mark sidebar__mark--lg">LB</div>
-        <h2>La Bodeguita</h2>
+        <div class="sidebar__mark sidebar__mark--lg">CU</div>
+        <h2>Carnes Exclusivas Ulloa</h2>
         <p class="panel__hint">Panel Admin · ingrese el PIN</p>
         ${field('PIN', '<input name="pin" type="password" inputmode="numeric" required autocomplete="off">')}
         <button class="btn-primary" type="submit">Entrar</button>
@@ -373,17 +363,7 @@ function vistaResumen(){
       ${metric('Neto de hoy', fmt(neto(movsDeHoy())), 'Todos los negocios')}
       ${metric('Pedidos nuevos', nuevos, 'Sin atender', 'amber')}
       ${metric('Bajo stock', bajo, 'Productos en mínimo', 'mint')}
-      ${metric('Próximo sorteo', '<span data-prox="val" style="font-size:20px"></span>', '<span data-prox="hint"></span>')}
     </div>
-    <section class="section-block">
-      <h2 class="section-block__title">Portales</h2>
-      <div class="panel" style="padding:20px;display:flex;flex-wrap:wrap;gap:10px">
-        <a class="btn-primary" href="https://bnservicios.bncr.fi.cr/" target="_blank" rel="noopener noreferrer" style="text-decoration:none">BN Servicios ↗</a>
-        <a class="btn-primary" href="https://www.tucan.fi.cr/wps/portal/tucan" target="_blank" rel="noopener noreferrer" style="text-decoration:none">BCR Tucán ↗</a>
-        <a class="btn-primary" href="https://www.jpsenlinea.go.cr/JPSEnLinea/" target="_blank" rel="noopener noreferrer" style="text-decoration:none">JPS en línea ↗</a>
-        <p class="panel__hint" style="width:100%">Se abren en una pestaña nueva. Ingrese sus credenciales directamente en cada portal; el panel no las guarda.</p>
-      </div>
-    </section>
     <section class="section-block">
       <h2 class="section-block__title">Últimos movimientos</h2>
       <div class="panel">${tablaMovs(db.ventas.slice(0,10), true)}</div>
@@ -396,11 +376,17 @@ function vistaNegocio(k){
   const hoy = neto(movs.filter(v => fechaCR(v.fecha) === hoyCR()));
   let html = '';
 
-  if (k === 'tiempos') html += panelSorteos();
-  if (k === 'loteria' || k === 'chances') {
-    html += `<div class="panel"><div class="panel--empty"><p><strong>Horario de sorteo:</strong> pendiente de confirmar con la JPS.</p></div></div>`;
-  }
 
+  html += `
+    <section class="section-block">
+      <h2 class="section-block__title">Escanear producto</h2>
+      <form class="panel" data-form="scan">
+        <div class="form-grid">
+          ${field('Código de barras', '<input name="codigo" data-scan placeholder="Escanee el producto" autocomplete="off">')}
+          ${field('Pago', `<select name="pago">${PAGOS.map(p => `<option>${p}</option>`).join('')}</select>`)}
+        </div>
+      </form>
+    </section>`;
   html += `
     <div class="metrics-grid">
       ${metric('Neto de hoy', fmt(hoy), n.nombre)}
@@ -507,6 +493,7 @@ function vistaInventario(){
       <form class="panel" data-form="producto">
         <div class="form-grid">
           ${field('Nombre', '<input name="nombre" required>')}
+          ${field('Código de barras', '<input name="codigo" inputmode="numeric" placeholder="Escanee o escriba">')}
           ${field('Precio (₡)', '<input name="precio" type="number" min="0" step="any" required>')}
           ${field('Existencias', '<input name="stock" type="number" min="0" step="1" required>')}
           ${field('Mínimo', '<input name="minimo" type="number" min="0" step="1" value="5" required>')}
@@ -516,6 +503,7 @@ function vistaInventario(){
     </section>`;
 
   const rows = db.productos.map(p => `<tr>
+    ${td('Código', `<span class="mono">${esc(p.codigo) || '—'}</span>`)}
     ${td('Producto', esc(p.nombre))}
     ${td('Precio', `<span class="mono">${fmt(p.precio)}</span>`)}
     ${td('Existencias', `<div class="stock-ctrl">
@@ -534,12 +522,12 @@ function vistaInventario(){
     <section class="section-block">
       <h2 class="section-block__title">Inventario</h2>
       <div class="panel">${db.productos.length
-        ? tabla(['Producto','Precio','Existencias','Mínimo','Acciones'], rows)
+        ? tabla(['Código','Producto','Precio','Existencias','Mínimo','Acciones'], rows)
         : vacio('No hay productos registrados')}</div>
     </section>
     <section class="section-block">
-      <h2 class="section-block__title">Ventas de abarrotes</h2>
-      <div class="panel">${tablaMovs(db.ventas.filter(v => v.biz === 'abarrotes'), false)}</div>
+      <h2 class="section-block__title">Ventas de carnes</h2>
+      <div class="panel">${tablaMovs(db.ventas.filter(v => v.biz === 'carnes'), false)}</div>
     </section>`;
 }
 
@@ -593,9 +581,9 @@ function shell(sec, body){
 
       <aside class="sidebar">
         <div class="sidebar__brand">
-          <div class="sidebar__mark">LB</div>
+          <div class="sidebar__mark">CU</div>
           <div>
-            <p class="sidebar__title">La Bodeguita</p>
+            <p class="sidebar__title">Carnes Exclusivas Ulloa</p>
             <p class="sidebar__subtitle">Panel Admin</p>
           </div>
         </div>
@@ -606,7 +594,7 @@ function shell(sec, body){
             </a>`).join('')}
         </nav>
         <div class="sidebar__footer">
-          <p>Agente autorizado BN</p>
+          <p>Carnes Exclusivas Ulloa</p>
           <p class="mono sidebar__project">Administración</p>
           <button class="btn-secondary" style="margin-top:8px" data-act="logout">Cerrar sesión</button>
         </div>
@@ -637,10 +625,7 @@ function renderPanel(){
   const vistas = {
     resumen: vistaResumen,
     pedidos: vistaPedidos,
-    bn: () => vistaNegocio('bn'),
-    tiempos: () => vistaNegocio('tiempos'),
-    loteria: () => vistaNegocio('loteria'),
-    chances: () => vistaNegocio('chances'),
+    ventas: () => vistaNegocio('carnes'),
     caja: vistaCaja,
     inventario: vistaInventario,
     equipo: vistaEquipo
@@ -648,6 +633,8 @@ function renderPanel(){
   const key = vistas[sec] ? sec : 'resumen';
   app.innerHTML = shell(key, vistas[key]());
   updateCountdown();
+  const sc = app.querySelector('[data-scan]');
+  if (sc) sc.focus();
 }
 
 function render(){
@@ -708,7 +695,7 @@ app.addEventListener('click', e => {
     const p = db.productos.find(x => x.id === id);
     if (!p || p.stock < 1) return;
     p.stock--;
-    db.ventas.unshift({ id:uid(), biz:'abarrotes', tipo:'Venta mostrador', desc:p.nombre, monto:p.precio, pago:'Efectivo', fecha:new Date().toISOString() });
+    db.ventas.unshift({ id:uid(), biz:'carnes', tipo:'Venta mostrador', desc:p.nombre, monto:p.precio, pago:'Efectivo', fecha:new Date().toISOString() });
     guardar(); render();
   }
 
@@ -760,6 +747,17 @@ app.addEventListener('submit', e => {
     guardar(); render();
   }
 
+  if (f.dataset.form === 'scan'){
+    const code = (d.codigo || '').trim();
+    const prod = db.productos.find(x => x.codigo === code);
+    if (!code) { return; }
+    if (!prod) { alert('Código no registrado: ' + code); render(); return; }
+    if (prod.stock < 1) { alert('Sin existencias: ' + prod.nombre); render(); return; }
+    prod.stock--;
+    db.ventas.unshift({ id:uid(), biz:'carnes', tipo:'Venta mostrador', desc:prod.nombre, monto:prod.precio, pago:d.pago || 'Efectivo', fecha:new Date().toISOString(), ref:code, comision:0, conciliado:false });
+    guardar(); render();
+  }
+
   if (f.dataset.form === 'pedido'){
     db.pedidos.unshift({
       id:uid(), tipo:d.tipo, nombre:d.nombre.trim(), tel:d.tel.trim(),
@@ -781,7 +779,7 @@ app.addEventListener('submit', e => {
     if (!d.nombre.trim() || !(precio >= 0) || isNaN(stock) || stock < 0 || isNaN(minimo) || minimo < 0){
       alert('Complete nombre, precio, existencias y mínimo'); return;
     }
-    db.productos.push({ id:uid(), nombre:d.nombre.trim(), precio, stock, minimo });
+    db.productos.push({ id:uid(), codigo:(d.codigo || '').trim(), nombre:d.nombre.trim(), precio, stock, minimo });
     guardar(); render();
   }
 });
