@@ -472,9 +472,6 @@ function vistaCaja(){
       ${metric('Efectivo hoy', fmt(sumaPago(hoyL,'Efectivo')))}
       ${metric('SINPE hoy', fmt(sumaPago(hoyL,'SINPE Móvil')), '', 'mint')}
       ${metric('Tarjeta hoy', fmt(sumaPago(hoyL,'Tarjeta')), '', 'amber')}
-      ${metric('Comisiones hoy', fmt(comisiones(hoyL)), 'Ganancia del día', 'mint')}
-      ${metric('Comisiones acumuladas', fmt(comisiones(db.ventas)), 'Ganancia total', 'mint')}
-      ${metric('Por conciliar', db.ventas.filter(v => !v.conciliado).length, 'Movimientos sin cuadrar', 'amber')}
     </div>
     <section class="section-block">
       <h2 class="section-block__title">Neto por negocio</h2>
